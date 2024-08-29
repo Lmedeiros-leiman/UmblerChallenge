@@ -9,9 +9,8 @@ namespace UmbraChallenge.Data;
 // 
 public class ApplicationUser : IdentityUser
 {
-    public string? Nickname { get; set; }
     public required ICollection<UserTransferKey> UserKeysList { get; set; } = [];
     public required ICollection<Transaction> UserTransactions { get;set;} = [];
-    
+
 }
 

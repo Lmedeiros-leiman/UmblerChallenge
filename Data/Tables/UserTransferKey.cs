@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,8 +24,11 @@ namespace UmbraChallenge.Data.Tables
             Name,
             Card,
             CPF,
+            CNPJ,
 
         };
+        [Key]
+        public required string KeyId {get; set;} = Guid.NewGuid().ToString();
         public required PossibleTransferKeys KeyType {get;set;}
         public required string KeyValue {get;set;}
     }

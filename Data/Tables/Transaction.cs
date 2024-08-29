@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 using UmbraChallenge.Data.Services;
+using UmbraChallenge.Data.Tables;
 
 namespace UmbraChallenge.Data.Tables
 {
@@ -14,15 +13,18 @@ namespace UmbraChallenge.Data.Tables
     // it also handles money transfers and that by itself is scary enough.
     //
     [Table("Transactions")]
-    public class Transaction( UserTransferKey senderKey, UserTransferKey receiverKey, decimal transferAmmount)
-    {
-        
+    public class Transaction {
         [Key]
-        public string TransactionId {  get; set;} = Guid.NewGuid().ToString();
+        public  string TransactionId {  get; set;}
+        public  UserTransferKey Sender {get; set;}
+        public  UserTransferKey Receiver {get; set;}
+        public  decimal TransferAmmount {get; set;}
 
-        public UserTransferKey Sender = senderKey;
-        public UserTransferKey Receiver = receiverKey;
-        public decimal TransferAmmount = transferAmmount;
-
+        public Transaction( UserTransferKey senderKey, UserTransferKey receiverKey, decimal transferAmmount) {
+            TransactionId = Guid.NewGuid().ToString();
+            Sender = senderKey;
+            Receiver = receiverKey;
+            TransferAmmount = transferAmmount;
+        }
     }
 }
