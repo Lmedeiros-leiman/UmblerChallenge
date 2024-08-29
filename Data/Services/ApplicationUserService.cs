@@ -5,8 +5,17 @@ using System.Threading.Tasks;
 
 namespace UmbraChallenge.Data.Services
 {
-    public class ApplicationUserService
+    public interface IApplicationUserService {
+
+
+
+
+    }
+    
+    public class ApplicationUserService(ApplicationDbContext databaseContext) : IApplicationUserService
     {
+        private readonly ApplicationDbContext _context  = databaseContext;
+        
         // registration and login
 
 
@@ -18,5 +27,6 @@ namespace UmbraChallenge.Data.Services
 
 
         // casual data fetching.
+        
     }
 }
