@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
+using UmbraChallenge.Data.Tables;
 
 namespace UmbraChallenge.Data.Services
 {
@@ -15,7 +15,7 @@ namespace UmbraChallenge.Data.Services
 
 
         public async Task<Transaction?> getTransactionByIdA(string transactionID) {
-            return _context.
+            return await _context.Transactions.FindAsync(transactionID);
         }
     }
 }

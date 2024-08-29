@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using UmbraChallenge.Components;
 using UmbraChallenge.Components.Account;
 using UmbraChallenge.Data;
+using UmbraChallenge.Data.Services;
+using UmbraChallenge.Data.Tables;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,14 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+
+// Application built in services
+//
+
+builder.Services.AddScoped<ITransactionService,TransactionService>();
+
+//
+// 
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>

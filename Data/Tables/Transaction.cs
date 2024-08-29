@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using UmbraChallenge.Data.Services;
 
 namespace UmbraChallenge.Data.Tables
 {
@@ -13,8 +14,9 @@ namespace UmbraChallenge.Data.Tables
     // it also handles money transfers and that by itself is scary enough.
     //
     [Table("Transactions")]
-    public class Transaction
+    public class Transaction()
     {
+        protected readonly static TransactionService _service =
         [Key]
         private string TransactionId {  get; set;} = GenerateRandomId();
 
@@ -23,7 +25,11 @@ namespace UmbraChallenge.Data.Tables
 
         private static string GenerateRandomId() {
             
-            Guid newId = Guid.NewGuid();
+            string newlyCreatedId = Guid.NewGuid().ToString();
+            while ( TransactionSe ) {
+                
+            }
+            Guid newId = 
             
             return newId.ToString();
         }
