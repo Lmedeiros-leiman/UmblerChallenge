@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace UmbraChallenge.Data.Tables
 {
-    public class UserTransferKeys
+    public class UserTransferKey
     {
         public enum PossibleTransferKeys
         {
