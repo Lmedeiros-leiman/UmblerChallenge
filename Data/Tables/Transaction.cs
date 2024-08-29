@@ -14,24 +14,15 @@ namespace UmbraChallenge.Data.Tables
     // it also handles money transfers and that by itself is scary enough.
     //
     [Table("Transactions")]
-    public class Transaction()
+    public class Transaction( UserTransferKey senderKey, UserTransferKey receiverKey, decimal transferAmmount)
     {
-        protected readonly static TransactionService _service =
+        
         [Key]
-        private string TransactionId {  get; set;} = GenerateRandomId();
+        public string TransactionId {  get; set;} = Guid.NewGuid().ToString();
 
+        public UserTransferKey Sender = senderKey;
+        public UserTransferKey Receiver = receiverKey;
+        public decimal TransferAmmount = transferAmmount;
 
-
-
-        private static string GenerateRandomId() {
-            
-            string newlyCreatedId = Guid.NewGuid().ToString();
-            while ( TransactionSe ) {
-                
-            }
-            Guid newId = 
-            
-            return newId.ToString();
-        }
     }
 }
