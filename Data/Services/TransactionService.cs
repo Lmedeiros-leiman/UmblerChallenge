@@ -26,7 +26,12 @@ namespace UmbraChallenge.Data.Services
         }
 
         public async Task<Transaction> CreateTransactionAsync(UserTransferKey senderKey, UserTransferKey receiverKey, decimal transferAmmount) {
-            Transaction temporaryTransaction = new Transaction(senderKey,receiverKey,transferAmmount);
+            Transaction temporaryTransaction = new() {
+                TransactionId = Guid.NewGuid().ToString(),
+                Sender = senderKey,
+                Receiver = receiverKey,
+                TransferAmmount = transferAmmount
+            };
 
             while (await TransactionExits(temporaryTransaction.TransactionId)) {
                 temporaryTransaction.TransactionId = Guid.NewGuid().ToString();

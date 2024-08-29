@@ -15,16 +15,10 @@ namespace UmbraChallenge.Data.Tables
     [Table("Transactions")]
     public class Transaction {
         [Key]
-        public  string TransactionId {  get; set;}
-        public  UserTransferKey Sender {get; set;}
-        public  UserTransferKey Receiver {get; set;}
-        public  decimal TransferAmmount {get; set;}
+        public required string TransactionId {  get; set;}
+        public required UserTransferKey Sender {get; set;}
+        public required UserTransferKey Receiver {get; set;}
+        public required decimal TransferAmmount {get; set;}
 
-        public Transaction( UserTransferKey senderKey, UserTransferKey receiverKey, decimal transferAmmount) {
-            TransactionId = Guid.NewGuid().ToString();
-            Sender = senderKey;
-            Receiver = receiverKey;
-            TransferAmmount = transferAmmount;
-        }
     }
 }
