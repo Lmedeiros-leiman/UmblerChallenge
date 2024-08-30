@@ -14,13 +14,13 @@
 
 
 <div class="row justify-content-center">
-    <h1 class="fs-2 text-center">Welcome Back!</h1>
+    
     <div class="col-md-4">
         <section>
             <StatusMessage Message="@errorMessage" />
             <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login">
                 <DataAnnotationsValidator />
-                <h2 class="fs-4">Use a local account to log in.</h2>
+                <h1 class="fs-2 text-center">Welcome Back!</h1>
                 <hr />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
@@ -42,13 +42,17 @@
                 <div>
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
                 </div>
-                <div>
-                    <p>
+                <div class="row mt-3">
+                    <div class="col">
                         <a href="Account/ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))">Register as a new user</a>
-                    </p>
+                    </div>
+                    <div class="col">
+                        <a href="@(NavigationManager.GetUriWithQueryParameters("Account/Register", new Dictionary<string, object?> { ["ReturnUrl"] = ReturnUrl }))" 
+                        class="btn btn-sm btn-outline-primary">
+                            Register a new account!
+                        </a>
+                    </div>
+                    
                     
                     
                 </div>
