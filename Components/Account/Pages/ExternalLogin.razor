@@ -124,7 +124,7 @@
         {
             Input.Email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email) ?? "";
             
-            if (await UserStore.FindByNameAsync( Input.Email.Normalize()) == null ) {
+            if (await UserStore.FindByNameAsync( Input.Email.Normalize(), CancellationToken.None) == null ) {
                 await OnValidSubmitAsync();
             }
             
