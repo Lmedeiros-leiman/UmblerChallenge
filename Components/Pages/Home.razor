@@ -3,27 +3,41 @@
 
 @page "/"
 
+<PageTitle>Home | Umbler Bank</PageTitle>
+
 <AuthorizeView>
     <Authorized>
 
-        <h1 class="fs-3">Hello, <span class="text-info">@context.User.Identity?.Name</span></h1>
 
-        <div class="row align-items-center">
-            <div class="col-md-4 col-8">
-                <div class="input-group">
-                    <input class="form-control form-control-lg" id="balance" readonly value="@(userBalance)"
-                        type="@(showingBalance)" />
-                    
-                    <div class="input-group-append d-flex gap-1">
-                        <div class="input-group-text">@currencyType</div>
-                        
-                        <button type="button" class="btn btn-secondary" @onclick="toggleShowingBalance">
-                            <i class="@(showingBalance == "password" ? "fa fa-eye-slash" : "fa fa-eye")"></i>
-                        </button>
+        <div class="container text-center">
+            <h1 class="fs-3">Hello, <span class="text-info">@context.User.Identity?.Name</span></h1>
+
+            <div class="row align-items-center justify-content-center">
+                <div class="col-md-4 col-8">
+                    <div class="input-group">
+                        <input class="form-control form-control-lg" id="balance" readonly value="@(userBalance)"
+                            type="@(showingBalance)" />
+
+                        <div class="input-group-append d-flex gap-1">
+                            <div class="input-group-text">@currencyType</div>
+
+                            <button type="button" class="btn btn-secondary" @onclick="toggleShowingBalance">
+                                <i class="@(showingBalance == "password" ? "fa fa-eye-slash" : "fa fa-eye")"></i>
+                            </button>
+                        </div>
+
                     </div>
+                </div>
+            </div>
 
-                    
-                    
+            <div class="row mt-2">
+                <div class="col">
+                    <a class="btn btn-sm btn-primary">
+                        Deposit
+                    </a>
+                    <a class="btn btn-sm btn-outline-danger">
+                        Withdraw
+                    </a>
                 </div>
             </div>
         </div>
@@ -31,14 +45,12 @@
 
 
 
+
+
+
+
     </Authorized>
 </AuthorizeView>
-<PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
 
 
 @code {

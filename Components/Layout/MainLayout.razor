@@ -16,11 +16,13 @@
                         
                     </div>
 
-                    <div class="dropdown">
+                    <div id="userDropdown" class="dropdown">
                         <button class="btn text-white btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span>
-                            @context.User.Identity?.Name
+                            <i class="bi bi-person-fill-nav-menu" aria-hidden="true"></i>
+                            <span>
+                                @context.User.Identity?.Name
+                            </span>
                         </button>
                         <ul class="dropdown-menu text-start">
                             
