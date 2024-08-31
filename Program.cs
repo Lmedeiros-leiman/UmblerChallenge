@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Resend;
 using UmbraChallenge.Components;
@@ -51,13 +52,22 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-
 // configure an email provider
 // in this project i'm using resend, but Microsofts by default recommends using SendGrid.
+
+builder.Services.AddOptions();
+builder.Services.AddHttpClient<ResendClient>();
 builder.Services.Configure<ResendClientOptions>( options => {
-    options.ApiToken = builder.Configuration["Resend:ApiToken"];
+    options.ApiToken = builder.Configuration["Resend:ApiToken"] ?? "NO RESEND KEY PROVIDED. PLEASE ADD ONE.";
 });
+builder.Services.AddTransient<IResend, ResendClient>();
+
+// Register the main email sender for Identity.
+builder.Services.AddTransient<IEmailSender<ApplicationUser>, ResendEmailSender<ApplicationUser> >();
+
+
+// no email boilerplate.
+//builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
 
