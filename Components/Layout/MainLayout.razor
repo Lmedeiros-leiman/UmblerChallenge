@@ -1,17 +1,78 @@
 ﻿@inherits LayoutComponentBase
 
-
+@implements IDisposable
+@inject NavigationManager NavigationManager
 
 
 <div class="page">
     <main>
-        <header class="navbar py-1 top-row">
-            <NavMenu />
-        </header>
-        
+        <AuthorizeView> <!-- So only logged in users can see the navbar options  -->
+            <Authorized>
+                <header class="navbar py-1 top-row">
+                    <div class="navbar navbar-dark">
+                        <a class="navbar-brand fs-4" style="vertical-align: middle;" href="/">
+                            <img src="./favicon.png"  width="32px" height="32px" />
+                            <span>Umbler Bank</span></a>
+                        
+                    </div>
+
+                    <div class="dropdown">
+                        <button class="btn text-white btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span>
+                            @context.User.Identity?.Name
+                        </button>
+                        <ul class="dropdown-menu text-start">
+                            
+                            <li class="dropdown-item">
+                                <a href="/Account/Manage">Account data</a>
+                            </li>
+                            <li class="dropdown-item">
+                                <a>Transfers</a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider" />
+                                <form action="Account/Logout" class="text-center" method="post">
+                                    <AntiforgeryToken />
+                                    <input type="hidden" name="ReturnUrl" value="@(currentUrl)" />
+                                    <button type="submit" class="btn btn-danger btn ">
+                                        <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </header>
+            </Authorized>
+        </AuthorizeView>
+
 
         <article class="content px-4">
             @Body
         </article>
     </main>
 </div>
+
+
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
