@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Resend;
 using UmbraChallenge.Components;
 using UmbraChallenge.Components.Account;
 using UmbraChallenge.Data;
@@ -51,6 +52,12 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+
+// configure an email provider
+// in this project i'm using resend, but Microsofts by default recommends using SendGrid.
+builder.Services.Configure<ResendClientOptions>( options => {
+    options.ApiToken = builder.Configuration["Resend:ApiToken"];
+});
 
 var app = builder.Build();
 
