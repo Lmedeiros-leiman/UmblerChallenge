@@ -4,9 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.CodeAnalysis.Options;
-using Microsoft.Extensions.Options;
 using Resend;
 
 namespace UmbraChallenge.Data.Services
@@ -33,20 +30,22 @@ namespace UmbraChallenge.Data.Services
         }
         protected async Task<string> RenderRazorAsHtml() {
 
+
+            return "NOT IMPLEMENTED YET.";
         }
 
         public async Task SendConfirmationLinkAsync(TUser user, string email, string confirmationLink) {
             
             
-            //await SendEmailAsync(email, "Confirm your email", $"<a href=\"{confirmationLink}\">Click here to confirm your email</a>");
+            await SendEmailAsync(email, "Confirm your email", $"<a href=\"{confirmationLink}\">Click here to confirm your email</a>");
         }
 
         public async Task SendPasswordResetCodeAsync(TUser user, string email, string resetCode) {
-            await SendEmailAsync(email, "Reset your password", $"<a href=\"{resetCode}\">Click here to confirm your email</a>");
+            await SendEmailAsync(email, "Password Reset Code:", $"<h2>"+resetCode+"</h2>");
         }
         
         public async Task SendPasswordResetLinkAsync(TUser user, string email, string resetLink) {
-            await SendEmailAsync(email, "Confirm your email", $"<a href=\"{resetLink}\">Click here to confirm your email</a>");
+            await SendEmailAsync(email, "Confirm your email", $"<a href=\"{resetLink}\">Click here to reset your password</a>");
         }
 
     }
