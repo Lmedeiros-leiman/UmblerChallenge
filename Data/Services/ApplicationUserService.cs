@@ -19,7 +19,10 @@ namespace UmbraChallenge.Data.Services
         // registration and login
 
 
-
+        public Boolean isEmailRegistered(string email) {
+            
+            return false;
+        }
 
 
 
