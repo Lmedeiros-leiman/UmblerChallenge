@@ -19,6 +19,11 @@ namespace UmbraChallenge.Data.Tables
         public required ApplicationUser Sender {get; set;}
         public required UserTransferKey Receiver {get; set;}
         public required double TransferAmmount {get; set;}
+        
+        
+        public readonly DateTime Timestamp = DateTime.UtcNow;
+        
+        public Transaction? CancelationTransation {get; set;} // refers to a transaction that cancels this one.
 
     }
 }
