@@ -1,23 +1,84 @@
 @using UmbraChallenge.Data.Tables
+@using UmbraChallenge.Data.Services
+@using UmbraChallenge.Data
+@using UmbraChallenge.Models
 
-@page "/Transactions"
+@attribute [Authorize]
+@page "/Transations"
+
+@inject IApplicationUserService userServices;
 
 @code {
-    public required ICollection<Transaction> transactionsHistory {get; set;} = [];
+    public ApplicationUser? loggedUser { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        loggedUser = await userServices.GetCurrentAuthUser();
+    }
+
+    public required ICollection<Transaction> transactionsHistory { get; set; } = [];
 }
 
+<AuthorizeView>
+    <Authorized>
 
-<h2 class="mt-4"> User transactions history.</h2>
+        <img src="./assets/icons/Received.svg" width="48" height="48" />
+        <img src="./assets/icons/Transfered.svg" width="48" height="48" />
+        <img src="./assets/icons/Credit.svg" width="48" height="48" />
 
-<div class="container bg-warning">
-    @if (transactionsHistory.Count > 0) {
-    <table class="table table-striped">
-        <thead>
-            <th></th>
-        </thead>
+        <div class="container text-center">
+            <h2>@context.User.Identity.Name transactions history</h2>
 
-    </table>
-    } else {
 
-    }
-</div>
+            <section class="card" style="max-width: 560px;">
+                
+                <main class="card-body d-flex">
+                    <section class="bg-warning">
+
+                    </section>
+                </main>
+
+            </section>
+
+            <div class="card" style="max-width: 540px;">
+            <div class="row g-1 justify-content-center align-items-center">
+                <div class="">
+                    
+                        <img src="./assets/icons/Credit.svg" style="padding: 10px 0;" class="bg-warning rounded-circle" width="64" height="64" />
+                    
+                
+                
+                </div>
+                <div class="col">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title mb-0">Card Title</h5>
+                    <small class="text-muted">12/01/2024</small> <!-- Date on the right side -->
+                    </div>
+                    <p class="card-text">This is a message that goes inside the card. It can be a brief description or notification.</p>
+                </div>
+                </div>
+            </div>
+            </div>
+
+        </div>
+
+
+        <div class="container bg-warning">
+            @if (transactionsHistory.Count > 0)
+            {
+                <table class="table table-striped">
+                    <thead>
+                        <th></th>
+                    </thead>
+
+                </table>
+            }
+            else
+            {
+
+            }
+        </div>
+
+    </Authorized>
+</AuthorizeView>
