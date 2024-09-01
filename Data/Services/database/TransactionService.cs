@@ -13,7 +13,7 @@ namespace UmbraChallenge.Data.Services
 
 
         // CRUD (also known as essenctial services)
-        public Task<Transaction> CreateTransactionAsync(UserTransferKey senderKey, UserTransferKey receiverKey, decimal transferAmmount);
+        public Task<Transaction> CreateTransactionAsync( ApplicationUser senderUser, UserTransferKey receiverKey, double transferAmmount);
 
 
         
@@ -25,10 +25,10 @@ namespace UmbraChallenge.Data.Services
             return await _context.Transactions.FindAsync(transactionId) != null;
         }
 
-        public async Task<Transaction> CreateTransactionAsync(UserTransferKey senderKey, UserTransferKey receiverKey, decimal transferAmmount) {
+        public async Task<Transaction> CreateTransactionAsync(ApplicationUser senderUser, UserTransferKey receiverKey, double transferAmmount) {
             Transaction temporaryTransaction = new() {
                 TransactionId = Guid.NewGuid().ToString(),
-                Sender = senderKey,
+                Sender = senderUser,
                 Receiver = receiverKey,
                 TransferAmmount = transferAmmount
             };

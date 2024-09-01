@@ -1,9 +1,10 @@
 ﻿@attribute [Authorize]
 @rendermode InteractiveServer
 
-@using UmbraChallenge.Data
+@using UmbraChallenge.Models
 @using UmbraChallenge.Data.Services
-
+@using UmbraChallenge.Data.Tables
+@using UmbraChallenge.Data
 
 @inject IApplicationUserService UserService
 
@@ -18,25 +19,26 @@
         <div class="container text-center">
             <h1 class="fs-3">Hello, <span class="text-info">@context.User.Identity?.Name</span></h1>
             <div class="row align-items-center justify-content-center">
-                <div class="col-md-4 col-8">
+                <div class="col-md-5 col-8">
 
-                    @foreach (var error in warnings)
+                    @foreach (PageAlert alert in warnings)
                     {
-                        <div class="alert alert-warning text-start">
-                            @error
+                        <div class="alert alert-@(alert.Type.ToString().ToLower()) text-start">
+                            @(alert.Message)
                         </div>
                     }
 
                     <div class="input-group">
-                        <input class="form-control form-control-lg" id="balance" readonly value="@(userBalance)"
-                            type="@(showingBalance)" />
+                        <input class="form-control form-control-lg" id="balance" readonly type="@(UserBalance.showingBalance)"
+                        value="@(UserBalance.showingBalance != "password" ? UserBalance.userBalance.Value.ToString() : "PlaceHolder")" />
+
 
                         <div class="input-group-append d-flex gap-1">
-                            <div class="input-group-text">@currencyType</div>
+                            <div class="input-group-text">@(UserBalance.userBalance.CurrencyType)</div>
 
                             <button type="button" style="z-index: unset;" class="btn btn-secondary"
-                            @onclick="toggleShowingBalance">
-                                <i class="@(showingBalance == "password" ? "fa fa-eye-slash" : "fa fa-eye")"></i>
+                            @onclick="UserBalance.ToggleVisualization">
+                                <i class="@(UserBalance.showingBalance == "password" ? "fa fa-eye-slash" : "fa fa-eye")"></i>
                             </button>
                         </div>
 
@@ -47,49 +49,43 @@
                     </div>
                 </div>
             </div>
+            
         </div>
 
     </Authorized>
 </AuthorizeView>
 
-<pre>
-    @debug
-</pre>
-
-@using System.Text.Json
-@using System.Text.Json.Serialization
-
 @code {
-    public List<string> warnings { get; set; } = [];
-    public string userBalance { get; set; } = "123";
-    public string currencyType { get; set; } = "R$";
-    public string showingBalance = "password";
-
-    public string debug = "";
-
-    public void Dump(object? debugObject)
-    {
-        debug = debugObject.GetType().ToString() + " => " + JsonSerializer.Serialize(debugObject, new JsonSerializerOptions()
-            {
-                WriteIndented = true,
-                ReferenceHandler = ReferenceHandler.Preserve,
-                AllowTrailingCommas = true
-            });
-    }
-
-
-    public void toggleShowingBalance()
-    {
-        showingBalance = showingBalance == "text" ? "password" : "text";
-    }
+    public List<PageAlert> warnings { get; set; } = [];
+    public BalanceVisualizer UserBalance { get; set; } = new();
+    public ApplicationUser? loggedUser {get; set;}
 
     protected override async Task OnInitializedAsync() {
-        ApplicationUser? User = await UserService.GetCurrentAuthUser();
+        loggedUser = await UserService.GetCurrentAuthUser();
         
+        if (loggedUser?.UserKeysList.Count == 0) {
+            string noKeysWarning = "You do not have any keys configured to receive payments. <a href='/Account/Manage/TransferKeys'>Configure it here.</a>";
+            warnings.Add(new PageAlert(noKeysWarning, AlertType.Warning) );
+        }
         
+        if (loggedUser?.UserTransactions.Count > 0) {
+            foreach (Transaction transaction in loggedUser.UserTransactions) {
+                if (transaction.Sender.Id == loggedUser.Id) {
+                    // if its a payment from the current user.
+                    UserBalance.userBalance.Value -= transaction.TransferAmmount;
+                } else {
+                    // its a payment from another user
+                    UserBalance.userBalance.Value += transaction.TransferAmmount;
+                }
+            }
+        } 
     }
 
 
-
-
+    public class BalanceVisualizer {
+        public string showingBalance {get;set;} = "password";
+        public void ToggleVisualization() { showingBalance = showingBalance == "text" ? "password" : "text"; }
+        public Currency userBalance = new();
+        
+    }
 }

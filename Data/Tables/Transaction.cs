@@ -16,9 +16,9 @@ namespace UmbraChallenge.Data.Tables
     public class Transaction {
         [Key]
         public required string TransactionId {  get; set;}
-        public required UserTransferKey Sender {get; set;}
+        public required ApplicationUser Sender {get; set;}
         public required UserTransferKey Receiver {get; set;}
-        public required decimal TransferAmmount {get; set;}
+        public required double TransferAmmount {get; set;}
 
     }
 }
