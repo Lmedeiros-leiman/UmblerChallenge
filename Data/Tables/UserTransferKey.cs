@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 /*
@@ -15,9 +16,7 @@ using System.Threading.Tasks;
 
 namespace UmbraChallenge.Data.Tables
 {
-    public class UserTransferKey
-    {
-        public enum PossibleTransferKeys
+    public enum PossibleTransferKeys
         {
             Email,
             Phone,
@@ -27,8 +26,14 @@ namespace UmbraChallenge.Data.Tables
             CNPJ,
 
         };
+    public class UserTransferKey
+    {
+        
         [Key]
         public required string KeyId {get; set;} = Guid.NewGuid().ToString();
+        
+        
+        public required ApplicationUser User {get; set;}
         public required PossibleTransferKeys KeyType {get;set;}
         public required string KeyValue {get;set;}
     }
