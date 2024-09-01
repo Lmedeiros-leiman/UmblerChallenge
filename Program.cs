@@ -23,6 +23,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStat
 
 // Application built in services
 //
+builder.Services.AddScoped<IApplicationUserService,ApplicationUserService>();
 
 builder.Services.AddScoped<ITransactionService,TransactionService>();
 

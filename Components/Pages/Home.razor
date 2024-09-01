@@ -1,6 +1,12 @@
 ﻿@attribute [Authorize]
 @rendermode InteractiveServer
 
+@using UmbraChallenge.Data
+@using UmbraChallenge.Data.Services
+
+
+@inject IApplicationUserService UserService
+
 @page "/"
 
 <PageTitle>Home | Umbler Bank</PageTitle>
@@ -11,9 +17,16 @@
 
         <div class="container text-center">
             <h1 class="fs-3">Hello, <span class="text-info">@context.User.Identity?.Name</span></h1>
-
             <div class="row align-items-center justify-content-center">
                 <div class="col-md-4 col-8">
+
+                    @foreach (var error in warnings)
+                    {
+                        <div class="alert alert-warning text-start">
+                            @error
+                        </div>
+                    }
+
                     <div class="input-group">
                         <input class="form-control form-control-lg" id="balance" readonly value="@(userBalance)"
                             type="@(showingBalance)" />
@@ -21,48 +34,62 @@
                         <div class="input-group-append d-flex gap-1">
                             <div class="input-group-text">@currencyType</div>
 
-                            <button type="button" class="btn btn-secondary" @onclick="toggleShowingBalance">
+                            <button type="button" style="z-index: unset;" class="btn btn-secondary"
+                            @onclick="toggleShowingBalance">
                                 <i class="@(showingBalance == "password" ? "fa fa-eye-slash" : "fa fa-eye")"></i>
                             </button>
                         </div>
 
                     </div>
-                </div>
-            </div>
-
-            <div class="row mt-2">
-                <div class="col">
-                    <a class="btn btn-sm btn-primary">
-                        Deposit
-                    </a>
-                    <a class="btn btn-sm btn-outline-danger">
-                        Withdraw
-                    </a>
+                    <div class="mt-2 float-end">
+                        <a class="btn btn-primary"> Deposit </a>
+                        <a class="btn btn-outline-danger"> Transfer </a>
+                    </div>
                 </div>
             </div>
         </div>
 
-
-
-
-
-
-
-
     </Authorized>
 </AuthorizeView>
 
+<pre>
+    @debug
+</pre>
+
+@using System.Text.Json
+@using System.Text.Json.Serialization
 
 @code {
+    public List<string> warnings { get; set; } = [];
     public string userBalance { get; set; } = "123";
     public string currencyType { get; set; } = "R$";
-    public string showingBalance = "text";
+    public string showingBalance = "password";
+
+    public string debug = "";
+
+    public void Dump(object? debugObject)
+    {
+        debug = debugObject.GetType().ToString() + " => " + JsonSerializer.Serialize(debugObject, new JsonSerializerOptions()
+            {
+                WriteIndented = true,
+                ReferenceHandler = ReferenceHandler.Preserve,
+                AllowTrailingCommas = true
+            });
+    }
 
 
     public void toggleShowingBalance()
     {
         showingBalance = showingBalance == "text" ? "password" : "text";
     }
+
+    protected override async Task OnInitializedAsync() {
+        ApplicationUser? User = await UserService.GetCurrentAuthUser();
+        
+        
+    }
+
+
 
 
 }
