@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
-using UmbraChallenge.Data.Tables;
+using UmbraChallenge.Data.Models;
 
 
 

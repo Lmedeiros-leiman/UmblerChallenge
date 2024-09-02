@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using UmbraChallenge.Data.Services;
-using UmbraChallenge.Data.Tables;
+using UmbraChallenge.Data.Models;
 
-namespace UmbraChallenge.Data.Tables
+namespace UmbraChallenge.Data.Models
 {
     // This table may be the most important one in the database.
     // It holds all interactions users have with eachothers

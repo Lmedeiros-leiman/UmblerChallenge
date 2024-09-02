@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UmbraChallenge.Data.Tables;
+using UmbraChallenge.Data.Models;
 
 namespace UmbraChallenge.Data.Services
 {

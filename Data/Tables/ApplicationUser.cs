@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using UmbraChallenge.Data.Tables;
 
-namespace UmbraChallenge.Data;
+namespace UmbraChallenge.Data.Models;
 
 // The default user table.
 // It has all the good built in stuff that the Identity framework provides with our 

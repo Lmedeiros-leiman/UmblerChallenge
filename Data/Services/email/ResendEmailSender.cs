@@ -28,11 +28,7 @@ namespace UmbraChallenge.Data.Services
             message.To.Add(email);
             await _resend.EmailSendAsync(message);
         }
-        protected async Task<string> RenderRazorAsHtml() {
-
-
-            return "NOT IMPLEMENTED YET.";
-        }
+        
 
         public async Task SendConfirmationLinkAsync(TUser user, string email, string confirmationLink) {
             
