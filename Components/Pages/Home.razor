@@ -64,7 +64,7 @@
         loggedUser = await UserService.GetCurrentAuthUser();
         
         if (loggedUser?.UserKeysList.Count == 0) {
-            string noKeysWarning = "You do not have any keys configured to receive payments. <a href='/Account/Manage/TransferKeys'>Configure it here.</a>";
+            string noKeysWarning = "You do not have any keys configured to receive payments.<p> <a href='/Account/TransferKeys'>Configure it here.</a></p>";
             warnings.Add(new PageAlert(noKeysWarning, AlertType.Warning) );
         }
         
