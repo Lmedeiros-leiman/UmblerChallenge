@@ -1,18 +1,80 @@
+@using System.ComponentModel.DataAnnotations
+@using UmbraChallenge.Data.Models
+@using UmbraChallenge.Data.Services
+
+@inject IApplicationUserService UserService;
+@inject IUserTransferKeysService UserKeysService;
+@inject NavigationManager NavigationManager;
+
+@attribute [Authorize]
+@rendermode InteractiveServer
+@page "/Account/AddKey"
 
 
 
-<EditForm>
+<EditForm Model="Input" method="post" OnValidSubmit="AddUserTransferKey" FormName="addKeyForm" class="form-control" style="max-width: 780px;">
+    <h1 class="fs-4 text-center">Add new key</h1>
+
+    <div class="form-group mb-2">
+        <InputSelect @bind-Value="Input.KeyType" id="keyType" name="keyType" required class="form-select">
+            @foreach (var option in Enum.GetValues<PossibleTransferKeys>()) {
+                <option value="@(option)"> @(option) </option>
+            }
+        </InputSelect>
+        <ValidationMessage For="() => Input.KeyType" class="text-danger" />
+    </div>
+    
+    <div class="form-group">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">Key Value</div>
+            </div>
+            <InputText  @bind-Value="Input.KeyValue" class="form-control mb-2" id="keyValue" name="keyValue" type="text"/>
+            <ValidationMessage For="() => Input.KeyValue" class="text-danger" />
+        </div>
+    </div>
+    <div class="form-group text-end">
+        <button name="submit" type="submit" class="btn btn-primary">Submit</button>
+    </div>
+
+
 
 </EditForm>
 
 
-
 @code {
+    // TODO : add key value mask and value validation.
+    //
+    ApplicationUser? loggedUser;
+    protected InputKeyModel Input { get; set; } = new();
 
-
-
-    protected class InputKeyModel {
+    protected override async Task OnInitializedAsync() {
+        loggedUser = await UserService.GetCurrentAuthUser();
         
     }
+
+
+    protected async Task AddUserTransferKey() {
+        if (loggedUser == null) { 
+            NavigationManager.NavigateTo("/Account/TransferKeys", true);
+            return;
+        }
+
+        await UserKeysService.AddKeyToUser(loggedUser, Input);
+        NavigationManager.NavigateTo( "/Account/TransferKeys" ,true);
+    }
+
+    public class InputKeyModel
+    {
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [Display(Name = "Key Value")]
+        public string KeyValue { get; set; } = "";
+        
+        [Required]
+        [Display(Name="Key Type")]
+        public PossibleTransferKeys KeyType { get; set; }
+    }
 }
+
 

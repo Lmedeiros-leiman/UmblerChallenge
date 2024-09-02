@@ -6,6 +6,7 @@
 @using UmbraChallenge.Data.Models
 @using UmbraChallenge.Data
 
+@inject NavigationManager NavigationManager
 @inject IApplicationUserService UserService
 
 @page "/"
@@ -61,6 +62,8 @@
     public ApplicationUser? loggedUser {get; set;}
 
     protected override async Task OnInitializedAsync() {
+        NavigationManager.NavigateTo( "/Account/AddKey" ,true);
+        
         loggedUser = await UserService.GetCurrentAuthUser();
         
         if (loggedUser?.UserKeysList.Count == 0) {

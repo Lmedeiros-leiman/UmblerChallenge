@@ -11,8 +11,8 @@ using UmbraChallenge.Data;
 namespace UmbraChallenge.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240829211225_TransactionAndUserkeysMigration")]
-    partial class TransactionAndUserkeysMigration
+    [Migration("20240902180423_addedTransactionAndOtherTables")]
+    partial class addedTransactionAndOtherTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -148,7 +148,7 @@ namespace UmbraChallenge.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("UmbraChallenge.Data.ApplicationUser", b =>
+            modelBuilder.Entity("UmbraChallenge.Data.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -212,42 +212,38 @@ namespace UmbraChallenge.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("UmbraChallenge.Data.Tables.Transaction", b =>
+            modelBuilder.Entity("UmbraChallenge.Data.Models.Transaction", b =>
                 {
                     b.Property<string>("TransactionId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ApplicationUserId")
+                    b.Property<string>("CancelationTransationTransactionId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ReceiverKeyId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("SenderKeyId")
-                        .IsRequired()
+                    b.Property<string>("SenderId")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("TransferAmmount")
-                        .HasColumnType("TEXT");
+                    b.Property<double>("TransferAmmount")
+                        .HasColumnType("REAL");
 
                     b.HasKey("TransactionId");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("CancelationTransationTransactionId");
 
                     b.HasIndex("ReceiverKeyId");
 
-                    b.HasIndex("SenderKeyId");
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("UmbraChallenge.Data.Tables.UserTransferKey", b =>
+            modelBuilder.Entity("UmbraChallenge.Data.Models.UserTransferKey", b =>
                 {
                     b.Property<string>("KeyId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ApplicationUserId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("KeyType")
@@ -257,9 +253,13 @@ namespace UmbraChallenge.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("KeyId");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserTransferKeys");
                 });
@@ -275,7 +275,7 @@ namespace UmbraChallenge.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("UmbraChallenge.Data.ApplicationUser", null)
+                    b.HasOne("UmbraChallenge.Data.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -284,7 +284,7 @@ namespace UmbraChallenge.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("UmbraChallenge.Data.ApplicationUser", null)
+                    b.HasOne("UmbraChallenge.Data.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -299,7 +299,7 @@ namespace UmbraChallenge.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UmbraChallenge.Data.ApplicationUser", null)
+                    b.HasOne("UmbraChallenge.Data.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -308,44 +308,48 @@ namespace UmbraChallenge.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("UmbraChallenge.Data.ApplicationUser", null)
+                    b.HasOne("UmbraChallenge.Data.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("UmbraChallenge.Data.Tables.Transaction", b =>
+            modelBuilder.Entity("UmbraChallenge.Data.Models.Transaction", b =>
                 {
-                    b.HasOne("UmbraChallenge.Data.ApplicationUser", null)
-                        .WithMany("UserTransactions")
-                        .HasForeignKey("ApplicationUserId");
+                    b.HasOne("UmbraChallenge.Data.Models.Transaction", "CancelationTransation")
+                        .WithMany()
+                        .HasForeignKey("CancelationTransationTransactionId");
 
-                    b.HasOne("UmbraChallenge.Data.Tables.UserTransferKey", "Receiver")
+                    b.HasOne("UmbraChallenge.Data.Models.UserTransferKey", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverKeyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UmbraChallenge.Data.Tables.UserTransferKey", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderKeyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("UmbraChallenge.Data.Models.ApplicationUser", "Sender")
+                        .WithMany("UserTransactions")
+                        .HasForeignKey("SenderId");
+
+                    b.Navigation("CancelationTransation");
 
                     b.Navigation("Receiver");
 
                     b.Navigation("Sender");
                 });
 
-            modelBuilder.Entity("UmbraChallenge.Data.Tables.UserTransferKey", b =>
+            modelBuilder.Entity("UmbraChallenge.Data.Models.UserTransferKey", b =>
                 {
-                    b.HasOne("UmbraChallenge.Data.ApplicationUser", null)
+                    b.HasOne("UmbraChallenge.Data.Models.ApplicationUser", "User")
                         .WithMany("UserKeysList")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("UmbraChallenge.Data.ApplicationUser", b =>
+            modelBuilder.Entity("UmbraChallenge.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("UserKeysList");
 

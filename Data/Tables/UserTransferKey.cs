@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+
 
 /*
     This is the model for a user connection data,
@@ -30,9 +26,9 @@ namespace UmbraChallenge.Data.Models
     {
         
         [Key]
-        public required string KeyId {get; set;} = Guid.NewGuid().ToString();
+        public string KeyId {get; set;} = Guid.NewGuid().ToString();
         
-        
+        public DateTime CreationTimeStamp = DateTime.UtcNow;
         public required ApplicationUser User {get; set;}
         public required PossibleTransferKeys KeyType {get;set;}
         public required string KeyValue {get;set;}

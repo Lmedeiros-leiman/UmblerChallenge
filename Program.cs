@@ -25,6 +25,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStat
 //
 builder.Services.AddScoped<IApplicationUserService,ApplicationUserService>();
 
+builder.Services.AddScoped<IUserTransferKeysService, UserTransferKeyService>();
 builder.Services.AddScoped<ITransactionService,TransactionService>();
 
 //
