@@ -1,0 +1,54 @@
+@using UmbraChallenge.Data.Tables
+@code {
+    [Parameter]
+    public required Transaction transaction { get; set; }
+
+}
+
+
+
+<AuthorizeView>
+    <Authorized>
+
+    
+<section class="card" style="max-width: 560px;">
+    <main class="card-body px-1 py-2 d-flex flex-wrap">
+        <div class="p-1">
+            
+            <div class="rounded-circle bg-success" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                <img src="./assets/icons/@( transaction.Receiver.User.Email == context.User.Identity.Name ? "Received" : "Transfered" ).svg" width="70%" height="70%" />
+            </div>
+
+        </div>
+        
+        <div class="bg-danger d-flex mx-2 justify-content-between align-items-start flex-grow-1">
+            <div class=" fw-bold ">
+                @if (transaction.Receiver.User.Email == context.User.Identity.Name) {
+                    @("Transference Received.");
+                } else {
+                    @("Transference Sent.");
+                }
+                
+            </div>
+            <div class=" fw-bold fst-italic">
+                @if (DateTime.Now.Year > transaction.Timestamp.Year) {
+                    // if this transaction is older than a year
+                    @(transaction.Timestamp.ToLocalTime().ToString("dd/MM/yyyy"))
+                } else {
+                    // 
+                    @(transaction.Timestamp.ToLocalTime().ToString("dd/MM"))
+                }
+                
+            </div>
+            <div class="w-100">
+                bottom
+            </div>
+        </div>
+        
+
+    </main>
+
+</section>
+
+    </Authorized>
+</AuthorizeView>

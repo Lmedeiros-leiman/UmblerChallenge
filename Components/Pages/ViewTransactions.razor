@@ -1,3 +1,4 @@
+@using UmbraChallenge.Components.Shared
 @using UmbraChallenge.Data.Tables
 @using UmbraChallenge.Data.Services
 @using UmbraChallenge.Data
@@ -22,63 +23,34 @@
 <AuthorizeView>
     <Authorized>
 
-        <img src="./assets/icons/Received.svg" width="48" height="48" />
-        <img src="./assets/icons/Transfered.svg" width="48" height="48" />
-        <img src="./assets/icons/Credit.svg" width="48" height="48" />
-
         <div class="container text-center">
             <h2>@context.User.Identity.Name transactions history</h2>
 
-
-            <section class="card" style="max-width: 560px;">
+            <div class="row justify-content-center">
                 
-                <main class="card-body d-flex">
-                    <section class="bg-warning">
+                @if (transactionsHistory.Count < 0) {
+                    @foreach (Transaction transaction in transactionsHistory) {
+                        <div>
+                            <TransactionCard transaction=transaction />
+                        </div>
+                    }
 
-                    </section>
-                </main>
-
-            </section>
-
-            <div class="card" style="max-width: 540px;">
-            <div class="row g-1 justify-content-center align-items-center">
-                <div class="">
-                    
-                        <img src="./assets/icons/Credit.svg" style="padding: 10px 0;" class="bg-warning rounded-circle" width="64" height="64" />
-                    
-                
-                
-                </div>
-                <div class="col">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                    <h5 class="card-title mb-0">Card Title</h5>
-                    <small class="text-muted">12/01/2024</small> <!-- Date on the right side -->
+                } else {
+                    <div class="fw-bold card border-2 shadow-sm" style="max-width: 420px;">
+                        <div class="card-body">
+                            <p class="card-text">
+                                This account has not made any trasferences.
+                            </p>
+                            <a href="/" class="btn btn-primary">
+                                Main page
+                            </a>
+                        </div>
+                        
                     </div>
-                    <p class="card-text">This is a message that goes inside the card. It can be a brief description or notification.</p>
-                </div>
-                </div>
+                    
+                }
+
             </div>
-            </div>
-
         </div>
-
-
-        <div class="container bg-warning">
-            @if (transactionsHistory.Count > 0)
-            {
-                <table class="table table-striped">
-                    <thead>
-                        <th></th>
-                    </thead>
-
-                </table>
-            }
-            else
-            {
-
-            }
-        </div>
-
     </Authorized>
 </AuthorizeView>
