@@ -8,7 +8,7 @@ using UmbraChallenge.Components;
 using UmbraChallenge.Components.Account;
 using UmbraChallenge.Data;
 using UmbraChallenge.Data.Services;
-using UmbraChallenge.Data.Tables;
+using UmbraChallenge.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

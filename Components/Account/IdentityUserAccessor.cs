@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using UmbraChallenge.Data;
+using UmbraChallenge.Data.Models;
 
 namespace UmbraChallenge.Components.Account;
 

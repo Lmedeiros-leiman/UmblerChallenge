@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using UmbraChallenge.Data.Tables;
 
 namespace UmbraChallenge.Data.Models;
 

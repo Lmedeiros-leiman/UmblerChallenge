@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using UmbraChallenge.Components.Account.Pages;
 using UmbraChallenge.Components.Account.Pages.Manage;
-using UmbraChallenge.Data;
+using UmbraChallenge.Data.Models;
 
 namespace Microsoft.AspNetCore.Routing;
 

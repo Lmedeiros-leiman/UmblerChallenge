@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using UmbraChallenge.Data;
+using UmbraChallenge.Data.Models;
 
 namespace UmbraChallenge.Components.Account;
 
