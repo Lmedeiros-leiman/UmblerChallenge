@@ -14,6 +14,5 @@ namespace UmbraChallenge.Data;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
-    public required DbSet<Transaction> Transactions {get; set;}
-    public required DbSet<UserTransferKey> UserTransferKeys {get; set;}
+    
 }

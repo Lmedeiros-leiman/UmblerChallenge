@@ -37,6 +37,8 @@ namespace UmbraChallenge.Data.Services {
                 if ( !string.IsNullOrEmpty(userName)) {
                     return await _context.Users
                         .Where(u => u.NormalizedUserName == userName.Normalize().ToUpper() )
+                        .Include(u => u.UserTransactions)
+                        .Include(u => u.UserKeysList)
                         .FirstOrDefaultAsync(); // Use FirstOrDefaultAsync to avoid exceptions if no match is found
                 }
             }

@@ -41,6 +41,13 @@
 
 </EditForm>
 
+<div>
+    @using System.Text.Json
+<pre>
+@JsonSerializer.Serialize(loggedUser)
+</pre>
+</div>
+
 
 @code {
     // TODO : add key value mask and value validation.

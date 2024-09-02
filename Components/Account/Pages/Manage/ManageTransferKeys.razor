@@ -9,17 +9,18 @@
 
 @inject IApplicationUserService UserService;
 
-@code{
-    ApplicationUser? loggedUser = null;
+@code {
+    public ApplicationUser? loggedUser { get; set; }
 
-        protected override async Task OnInitializedAsync() {
-            loggedUser = await UserService.GetCurrentAuthUser();
-        }
+    protected override async Task OnInitializedAsync()
+    {
+        loggedUser = await UserService.GetCurrentAuthUser();
+    }
 
 }
 
-<section class="container" >
-    
+<section class="container">
+
     <nav class="navbar mb-2 px-2 shadow-sm border-1 border rounded-1 d-flex justify-content-between">
         <div class="nav-item">
             <h1 class="text-primary fs-4 align-middle">Configure your transfer keys</h1>
@@ -29,25 +30,29 @@
             <a href="/Account/AddKey" class="btn btn-primary">Add key</a>
         </div>
     </nav>
-    
-    
-    
-    @if (loggedUser?.UserKeysList.Count == 0) {
-        <div class="alert alert-warning">
-            <strong>You dont have any keys configured</strong>
-            <main>
-                You will need to register one if you want to receive payments.
-            </main>
-        </div>
-    } else {
-        @foreach (UserTransferKey key in loggedUser.UserKeysList)
+
+    @if (loggedUser != null)
+    {
+
+        @if (loggedUser?.UserKeysList.Count == 0)
         {
-            <section>
-                <TransferKeyCard />
-            </section>
+            <div class="alert alert-warning">
+                <strong>You dont have any keys configured</strong>
+                <main>
+                    You will need to register one if you want to receive payments.
+                </main>
+            </div>
+        }
+        else
+        {
+            @foreach (UserTransferKey key in loggedUser?.UserKeysList)
+            {
+                <section>
+                    <TransferKeyCard />
+                </section>
+            }
         }
     }
-
 
 
 </section>

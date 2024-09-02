@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using UmbraChallenge.Data.Models;
 
 namespace UmbraChallenge.Data.Services
@@ -22,7 +23,7 @@ namespace UmbraChallenge.Data.Services
     {
         private readonly ApplicationDbContext _context = databaseContext;
         public async Task<bool> TransactionExits(string transactionId) {
-            return await _context.Transactions.FindAsync(transactionId) != null;
+            return await _context.Set<Transaction>().FindAsync(transactionId) != null;
         }
 
         public async Task<Transaction> CreateTransactionAsync(ApplicationUser senderUser, UserTransferKey receiverKey, double transferAmmount) {
@@ -37,7 +38,11 @@ namespace UmbraChallenge.Data.Services
                 temporaryTransaction.TransactionId = Guid.NewGuid().ToString();
             }
 
-            await _context.Transactions.AddAsync(temporaryTransaction);
+            var receiverUser = await _context.Users.FirstAsync(u => u.UserKeysList.Any(k => k.KeyId == receiverKey.KeyId ));
+
+            senderUser.UserTransactions.Add(temporaryTransaction);
+            receiverUser.UserTransactions.Add(temporaryTransaction);
+
             await _context.SaveChangesAsync();
 
             // in case we may need to use it.
