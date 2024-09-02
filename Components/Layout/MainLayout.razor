@@ -11,35 +11,33 @@
                 <header class="navbar py-1 top-row ">
                     <div class="navbar navbar-dark">
                         <a class="navbar-brand fs-4" style="vertical-align: middle;" href="/">
-                            <img src="./favicon.png"  width="32px" height="32px" />
+                            <img src="./favicon.png" width="32px" height="32px" />
                             <span>Umbler Bank</span></a>
-                        
+
                     </div>
 
                     <div id="userDropdown" class="dropdown">
-                        <button class="btn text-white btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-fill-nav-menu" aria-hidden="true"></i>
+                        <button class="btn text-white btn-outline-primary dropdown-toggle d-flex align-items-center"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-fill-nav-menu me-2 " aria-hidden="true"></i>
                             <span>
                                 @context.User.Identity?.Name
                             </span>
                         </button>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="/">Home</a>
-                            <a class="dropdown-item" href="/Account/Manage">Account data</a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item m-0" href="/">Home</a>
+                            <a class="dropdown-item m-0" href="/Account/Manage">Account data</a>
+                            <a class="dropdown-item m-0" href="/Transations">Transactions history</a>
 
-                            <a class="dropdown-item" href="/Transations">Transactions history</a>
-
-                            <div class="dropdown-divider"></div>
+                            <hr class="dropdown-divider" />
                             <form action="Account/Logout" class="text-center" method="post">
                                 <AntiforgeryToken />
                                 <input type="hidden" name="ReturnUrl" value="@(currentUrl)" />
-                                <button type="submit" class="btn btn-danger btn ">
-                                    <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
+                                <button type="submit" class="btn btn-danger">
+                                    <span class="bi bi-arrow-bar-left-nav-menu me-1" aria-hidden="true"></span> Logout
                                 </button>
                             </form>
-
                         </div>
-                        
                     </div>
                 </header>
             </Authorized>
