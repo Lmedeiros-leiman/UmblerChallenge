@@ -90,7 +90,6 @@
                 await OnLoginCallbackAsync();
                 return;
             }
-
             // We should only reach this page via the login callback, so redirect back to
             // the login page if we get here some other way.
             RedirectManager.RedirectTo("Account/Login");
@@ -119,15 +118,26 @@
         }
 
         // If the user does not have an account, then create the account with the external login email.
-        // if there is already an account, propmt the user for a manual email registration.
-        if (externalLoginInfo.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
-        {
+        // if there is already an account, log into it. the user has already logged in via a external provider.
+        if (externalLoginInfo.Principal.HasClaim(c => c.Type == ClaimTypes.Email)) {
             Input.Email = externalLoginInfo.Principal.FindFirstValue(ClaimTypes.Email) ?? "";
-            
-            if (await UserStore.FindByNameAsync( Input.Email.Normalize(), CancellationToken.None) == null ) {
+            var storedUser = await UserManager.FindByEmailAsync(Input.Email);
+            if ( storedUser == null ) {
                 await OnValidSubmitAsync();
+            } // logs the user into the account
+            else {
+                
+                // If account confirmation is required, we need to show the link if we don't have a real email sender
+                if (UserManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                    // its set to false by default.
+                    RedirectManager.RedirectTo("Account/RegisterConfirmation", new() { ["email"] = Input.Email });
+                }
+
+                await SignInManager.SignInAsync(storedUser, isPersistent: false, externalLoginInfo.LoginProvider);
+                RedirectManager.RedirectTo(ReturnUrl);
+                
             }
-            
         }
     }
 

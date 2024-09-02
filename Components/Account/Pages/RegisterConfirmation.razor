@@ -16,18 +16,12 @@
 
 <StatusMessage Message="@statusMessage" />
 
-@if (emailConfirmationLink is not null)
-{
-    <p>
-        This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-        Normally this would be emailed: <a href="@emailConfirmationLink">Click here to confirm your account</a>
-    </p>
-    
-}
-else
-{
-    <p>Please check your email to confirm your account.</p>
-}
+
+<p>Please check your email to confirm your account.</p>
+
+<p class="alert alert-warning">It is not required to confim your email, since this is just testing/staging enviroment.</p>
+<p> <a class="btn btn-lg btn-primary" href="/">Login</a></p>
+
 
 @code {
     private string? emailConfirmationLink;
@@ -42,10 +36,8 @@ else
     [SupplyParameterFromQuery]
     private string? ReturnUrl { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        RedirectManager.RedirectTo("");
-        /*
+    protected override async Task OnInitializedAsync() {
+        
         if (Email is null)
         {
             RedirectManager.RedirectTo("");
@@ -57,6 +49,6 @@ else
             HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
             statusMessage = "Error finding user for unspecified email";
         }
-        */
+        
     }
 }

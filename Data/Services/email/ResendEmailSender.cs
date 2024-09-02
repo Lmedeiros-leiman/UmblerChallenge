@@ -31,11 +31,8 @@ namespace UmbraChallenge.Data.Services
         
 
         public async Task SendConfirmationLinkAsync(TUser user, string email, string confirmationLink) {
-            
-            
             await SendEmailAsync(email, "Confirm your email", $"<a href=\"{confirmationLink}\">Click here to confirm your email</a>");
         }
-
         public async Task SendPasswordResetCodeAsync(TUser user, string email, string resetCode) {
             await SendEmailAsync(email, "Password Reset Code:", $"<h2>"+resetCode+"</h2>");
         }
