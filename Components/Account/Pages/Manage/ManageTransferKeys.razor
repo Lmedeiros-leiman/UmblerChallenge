@@ -2,6 +2,7 @@
 
 @using UmbraChallenge.Data.Services
 @using UmbraChallenge.Data.Models
+@using UmbraChallenge.Components.Shared
 
 @inject IApplicationUserService UserService;
 
@@ -15,15 +16,37 @@
 }
 
 <section class="container" >
-    <h1>Configure your transfer keys</h1>
+    
+    <nav class="navbar mb-2 px-2 shadow-sm border-1 border rounded-1 d-flex justify-content-between">
+        <div class="nav-item">
+            <h1 class="text-primary fs-4 align-middle">Configure your transfer keys</h1>
+        </div>
+
+        <div class="nav-item">
+            <a href="/Account/AddKey" class="btn btn-primary">Add key</a>
+        </div>
+    </nav>
+    
+    
+    
     @if (loggedUser?.UserKeysList.Count == 0) {
         <div class="alert alert-warning">
             <strong>You dont have any keys configured</strong>
             <main>
-                You need to register one if you want to receive payments.
+                You will need to register one if you want to receive payments.
             </main>
         </div>
+    } else {
+        @foreach (UserTransferKey key in loggedUser.UserKeysList)
+        {
+            <section>
+                <TransferKeyCard />
+            </section>
+        }
     }
+
+
+
 </section>
 
 
