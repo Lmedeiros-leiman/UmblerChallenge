@@ -6,11 +6,25 @@
 @inject IApplicationUserService UserService;
 
 @code{
+    ApplicationUser? loggedUser = null;
+
+        protected override async Task OnInitializedAsync() {
+            loggedUser = await UserService.GetCurrentAuthUser();
+        }
 
 }
 
 <section class="container" >
     <h1>Configure your transfer keys</h1>
+    @if (loggedUser?.UserKeysList.Count == 0) {
+        <div class="alert alert-warning">
+            <strong>You dont have any keys configured</strong>
+            <main>
+                You need to register one if you want to receive payments.
+            </main>
+        </div>
+    }
 </section>
-<h1> Configure Transfer Keys </h1>
+
+
 
