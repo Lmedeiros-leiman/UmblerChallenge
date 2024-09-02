@@ -62,7 +62,6 @@
     public ApplicationUser? loggedUser {get; set;}
 
     protected override async Task OnInitializedAsync() {
-        NavigationManager.NavigateTo( "/Account/AddKey" ,true);
         
         loggedUser = await UserService.GetCurrentAuthUser();
         
