@@ -15,7 +15,7 @@ namespace UmbraChallenge.Data.Models
     [Table("Transactions")]
     public class Transaction {
         [Key]
-        public required string TransactionId {  get; set;}
+        public string TransactionId {  get; set;} = Guid.NewGuid().ToString();
         public required ApplicationUser Sender {get; set;}
         public required UserTransferKey Receiver {get; set;}
         public required double TransferAmmount {get; set;}
