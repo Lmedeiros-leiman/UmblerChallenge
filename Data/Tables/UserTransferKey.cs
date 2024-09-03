@@ -31,6 +31,7 @@ namespace UmbraChallenge.Data.Models
         public DateTime CreationTimeStamp = DateTime.UtcNow;
         public required ApplicationUser User {get; set;}
         public required PossibleTransferKeys KeyType {get;set;}
+        public bool IsActive {get;set;} = true;
         public required string KeyValue {get;set;}
     }
 }
