@@ -4,9 +4,11 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using UmbraChallenge.Data.Models
+@using UmbraChallenge.Data.Services
 @using Microsoft.AspNetCore.Identity
 
 @inject SignInManager<ApplicationUser> SignInManager
+@inject IUserDatabaseService UserDatabaseService
 @inject UserManager<ApplicationUser> UserManager
 @inject IdentityRedirectManager RedirectManager
 
@@ -46,7 +48,10 @@
             var result = await UserManager.ConfirmEmailAsync(user, code);
 
             // logs the user in, the user needs a special code sent via email to even get here.
+            // also adds the email as a viable key.
             await SignInManager.SignInAsync(user, isPersistent: false, "Confirmation mail link");
+            
+            await UserDatabaseService.AddNewUserTransferKey(user, new () {KeyType=PossibleTransferKeys.Email ,KeyValue=user.Email});
 
             RedirectManager.RedirectToWithStatus("/", result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.", HttpContext);
         }
