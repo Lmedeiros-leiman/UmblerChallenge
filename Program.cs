@@ -9,6 +9,7 @@ using UmbraChallenge.Components.Account;
 using UmbraChallenge.Data;
 using UmbraChallenge.Data.Services;
 using UmbraChallenge.Data.Models;
+using UmbraChallenge.Email.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
