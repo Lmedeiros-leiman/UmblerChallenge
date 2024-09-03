@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UmbraChallenge.Data;
 
@@ -10,9 +11,11 @@ using UmbraChallenge.Data;
 namespace UmbraChallenge.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240903223747_InitialMigrationWithTrasactionsAndUserKeys")]
+    partial class InitialMigrationWithTrasactionsAndUserKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
@@ -207,6 +210,50 @@ namespace UmbraChallenge.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "e4431a30-c08d-4861-9aff-db90e2170bdf",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "1eb4498c-8b26-4682-87c6-6d9550572719",
+                            Email = "admin@localhost",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "ADMIN@LOCALHOST",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "76fd2ffa-911a-46d6-943d-3cfb39734d50",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@localhost"
+                        },
+                        new
+                        {
+                            Id = "176403f3-37b3-410a-9214-ded296964ee8",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "7eaf8dbd-75ba-4bb4-a2f6-758fc54c0677",
+                            Email = "john@localhost",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "JOHN@LOCALHOST",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "772c3ca0-2748-4a9a-92f7-fd9846051b3e",
+                            TwoFactorEnabled = false,
+                            UserName = "john@localhost"
+                        },
+                        new
+                        {
+                            Id = "649aa4e4-e88c-4132-baa2-f62922e77103",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "44359f4d-67c1-470f-bb76-6d1a3e4d9ce9",
+                            Email = "maria@localhost",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "MARIA@LOCALHOST",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "303d4655-c2c9-4cd1-b4df-546639a8c89d",
+                            TwoFactorEnabled = false,
+                            UserName = "maria@localhost"
+                        });
                 });
 
             modelBuilder.Entity("UmbraChallenge.Data.Models.Transaction", b =>
@@ -218,6 +265,7 @@ namespace UmbraChallenge.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ReceiverKeyId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SenderId")
@@ -243,6 +291,9 @@ namespace UmbraChallenge.Migrations
                     b.Property<string>("KeyId")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("KeyType")
                         .HasColumnType("INTEGER");
 
@@ -258,7 +309,33 @@ namespace UmbraChallenge.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserTransferKey");
+                    b.ToTable("UserTransferKeys");
+
+                    b.HasData(
+                        new
+                        {
+                            KeyId = "a146580d-17ab-440f-a037-618aca2f5e4b",
+                            IsActive = true,
+                            KeyType = 0,
+                            KeyValue = "admin@localhost",
+                            UserId = "e4431a30-c08d-4861-9aff-db90e2170bdf"
+                        },
+                        new
+                        {
+                            KeyId = "040e896f-47e0-4f3a-8478-3f4fd727c4d1",
+                            IsActive = true,
+                            KeyType = 0,
+                            KeyValue = "john@localhost",
+                            UserId = "176403f3-37b3-410a-9214-ded296964ee8"
+                        },
+                        new
+                        {
+                            KeyId = "e2c52d3b-e488-46ff-86c3-f76b3eaf3213",
+                            IsActive = true,
+                            KeyType = 0,
+                            KeyValue = "maria@localhost",
+                            UserId = "649aa4e4-e88c-4132-baa2-f62922e77103"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -320,10 +397,12 @@ namespace UmbraChallenge.Migrations
 
                     b.HasOne("UmbraChallenge.Data.Models.UserTransferKey", "Receiver")
                         .WithMany()
-                        .HasForeignKey("ReceiverKeyId");
+                        .HasForeignKey("ReceiverKeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("UmbraChallenge.Data.Models.ApplicationUser", "Sender")
-                        .WithMany("UserTransactions")
+                        .WithMany()
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -338,19 +417,12 @@ namespace UmbraChallenge.Migrations
             modelBuilder.Entity("UmbraChallenge.Data.Models.UserTransferKey", b =>
                 {
                     b.HasOne("UmbraChallenge.Data.Models.ApplicationUser", "User")
-                        .WithMany("UserKeysList")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("UmbraChallenge.Data.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("UserKeysList");
-
-                    b.Navigation("UserTransactions");
                 });
 #pragma warning restore 612, 618
         }

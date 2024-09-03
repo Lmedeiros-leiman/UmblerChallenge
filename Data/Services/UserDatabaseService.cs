@@ -116,7 +116,7 @@ namespace UmbraChallenge.Data.Services {
         //
         public async Task<PageAlert> AddNewUserTransferKey(ApplicationUser user, AddTransferKey.InputKeyModel Input) {
             try {
-                var newKey = new UserTransferKey() { KeyValue = Input.KeyValue, KeyType = Input.KeyType, User = user };
+                var newKey = new UserTransferKey() { UserId = user.Id ,KeyValue = Input.KeyValue, KeyType = Input.KeyType, User = user };
                 // makes sure the key ID is unique.
                 while (await _dbContext.UserTransferKeys.FindAsync(newKey.KeyId) != null) {
                     newKey.KeyId = Guid.NewGuid().ToString();

@@ -11,6 +11,7 @@ public class ApplicationUser : IdentityUser {
     //
     // these are here to possibily make it easier to cary these objects around without making multiple parameters.
     // since these empty lists could be manually filled.
+    
     [NotMapped]
     public ICollection<Transaction> TransactionsList { get; set; } = [];
     [NotMapped]

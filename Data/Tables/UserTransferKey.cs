@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 
 /*
@@ -22,14 +23,17 @@ namespace UmbraChallenge.Data.Models
             CNPJ,
 
         };
+    
+    [Table("UserTransferKeys")]
     public class UserTransferKey
     {
         
         [Key]
         public string KeyId {get; set;} = Guid.NewGuid().ToString();
+        public required string UserId {get; set;}
         
         public DateTime CreationTimeStamp = DateTime.UtcNow;
-        public required ApplicationUser User {get; set;}
+        public  ApplicationUser? User {get; set;}
         public required PossibleTransferKeys KeyType {get;set;}
         public bool IsActive {get;set;} = true;
         public required string KeyValue {get;set;}
