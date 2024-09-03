@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Resend;
 
-namespace UmbraChallenge.Data.Services
+namespace UmbraChallenge.Email.Services
 {
     public class ResendEmailSender<TUser> : IEmailSender<TUser> where TUser : class
     {
