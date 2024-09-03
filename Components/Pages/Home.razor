@@ -7,7 +7,7 @@
 @using UmbraChallenge.Data
 
 @inject NavigationManager NavigationManager
-@inject IApplicationUserService UserService
+@inject IUserDatabaseService UserService
 
 @page "/"
 
@@ -62,23 +62,17 @@
     public ApplicationUser? loggedUser {get; set;}
 
     protected override async Task OnInitializedAsync() {
-        
+        string keysWaning = "";
         loggedUser = await UserService.GetCurrentAuthUser();
         
-        if (loggedUser?.UserKeysList.Count == 0) {
-            string noKeysWarning = "You do not have any keys configured to receive payments.<p> <a href='/Account/TransferKeys'>Configure it here.</a></p>";
-            warnings.Add(new PageAlert(noKeysWarning, AlertType.Warning) );
-        }
-        
-        if (loggedUser?.UserTransactions.Count > 0) {
-            foreach (Transaction transaction in loggedUser.UserTransactions) {
-                if (transaction.Sender.Id == loggedUser.Id) {
-                    // if its a payment from the current user.
-                    UserBalance.userBalance.Value -= transaction.TransferAmmount;
-                } else {
-                    // its a payment from another user
-                    UserBalance.userBalance.Value += transaction.TransferAmmount;
-                }
+        if (loggedUser != null) {
+            UserBalance.userBalance.Value = await UserService.GetUserBalance(loggedUser);
+            if (loggedUser.EmailConfirmed == false) {
+                keysWaning += "<p> Your email is not confirmed, you cannot user it as a transfer key until it is confirmed. </p>";
+            }
+            if (loggedUser?.UserKeysList.Count == 0) {
+                keysWaning += "You do not have any keys configured to receive payments.<p> <a href='/Account/TransferKeys'>Configure it here.</a></p>";
+                warnings.Add(new PageAlert(keysWaning, AlertType.Warning) );
             }
         } 
     }

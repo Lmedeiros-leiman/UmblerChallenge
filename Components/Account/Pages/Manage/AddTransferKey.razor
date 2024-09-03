@@ -2,8 +2,7 @@
 @using UmbraChallenge.Data.Models
 @using UmbraChallenge.Data.Services
 
-@inject IApplicationUserService UserService;
-@inject IUserTransferKeysService UserKeysService;
+@inject IUserDatabaseService UserService;
 @inject NavigationManager NavigationManager;
 
 @attribute [Authorize]
@@ -41,13 +40,6 @@
 
 </EditForm>
 
-<div>
-    @using System.Text.Json
-<pre>
-@JsonSerializer.Serialize(loggedUser)
-</pre>
-</div>
-
 
 @code {
     // TODO : add key value mask and value validation.
@@ -67,7 +59,7 @@
             return;
         }
 
-        await UserKeysService.AddKeyToUser(loggedUser, Input);
+        await UserService.AddNewUserTransferKey(loggedUser, Input);
         NavigationManager.NavigateTo( "/Account/TransferKeys" ,true);
     }
 

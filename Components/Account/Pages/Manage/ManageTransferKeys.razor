@@ -7,7 +7,7 @@
 @using UmbraChallenge.Data.Models
 @using UmbraChallenge.Components.Shared
 
-@inject IApplicationUserService UserService;
+@inject IUserDatabaseService UserService;
 
 @code {
     public ApplicationUser? loggedUser { get; set; }
@@ -15,6 +15,11 @@
     protected override async Task OnInitializedAsync()
     {
         loggedUser = await UserService.GetCurrentAuthUser();
+        if (loggedUser != null) {
+            ICollection<UserTransferKey> userKeys = await UserService.GetUserTransferKeys(loggedUser);
+            loggedUser.UserKeysList = userKeys;
+        }
+        
     }
 
 }
@@ -33,7 +38,6 @@
 
     @if (loggedUser != null)
     {
-
         @if (loggedUser?.UserKeysList.Count == 0)
         {
             <div class="alert alert-warning">

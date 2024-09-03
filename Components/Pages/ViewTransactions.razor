@@ -7,7 +7,7 @@
 @attribute [Authorize]
 @page "/Transations"
 
-@inject IApplicationUserService userServices;
+@inject IUserDatabaseService userServices;
 
 @code {
     public ApplicationUser? loggedUser { get; set; }
@@ -15,6 +15,10 @@
     protected override async Task OnInitializedAsync()
     {
         loggedUser = await userServices.GetCurrentAuthUser();
+        if (loggedUser != null) {
+            ICollection<Transaction> userTransations = await userServices.GetUserTransactions(loggedUser);
+            loggedUser.TransactionsList = userTransations;
+        }
     }
 
     public required ICollection<Transaction> transactionsHistory { get; set; } = [];
