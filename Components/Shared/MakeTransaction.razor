@@ -1,0 +1,26 @@
+@page "/makeTransaction"
+@attribute [Authorize]
+
+@using UmbraChallenge.Data.Models
+
+
+
+
+
+
+
+@code {
+    private InputTransaction Input {get; set;}
+    protected override void OnInitialized() {
+        Input = new();
+    }
+    protected override async Task OnInitializedAsync() {
+        
+    }
+
+    public sealed class InputTransaction {
+        public UserTransferKey ReceiverKey {get; set;}
+        public double Ammount {get; set;}
+        
+    }
+}
