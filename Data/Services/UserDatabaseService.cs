@@ -3,7 +3,7 @@ namespace UmbraChallenge.Data.Services {
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.EntityFrameworkCore;
     using UmbraChallenge.Components.Account.Pages.Manage;
-    using UmbraChallenge.Components.Shared;
+    using UmbraChallenge.Components.Pages;
     using UmbraChallenge.Data.Models;
     using UmbraChallenge.Models;
 

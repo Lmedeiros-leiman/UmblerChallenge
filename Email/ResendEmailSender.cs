@@ -21,8 +21,8 @@ namespace UmbraChallenge.Email.Services
         public async Task SendEmailAsync(string email, string subject, string htmlMessage) {
             _logger.LogInformation("Sending email to {email} with subject {subject}, this is the text message: \n {htmlMessage}", email, subject, htmlMessage);
             var message = new EmailMessage {
-                From = "TestingMail@resend.dev",
-                Subject = subject,
+                From = "UmblerBank@resend.dev",
+                Subject = $"{subject} | Dont Reply.",
                 HtmlBody = htmlMessage
             };
             message.To.Add(email);
