@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 
 @using UmbraChallenge.Models
+@using UmbraChallenge.Components.Shared
 @using UmbraChallenge.Data.Services
 @using UmbraChallenge.Data.Models
 @using UmbraChallenge.Data
@@ -15,42 +16,30 @@
 
 <AuthorizeView>
     <Authorized>
-
+        <div class="container">
+            <nav class="nav navbar shadow-sm border-2 px-2 mt-3">
+                <div class="nav-item">
+                    <BalanceShower loggedUser="@(loggedUser)"/>
+                </div>
+                <div class="nav-item d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block d-xxxl-block">
+                    <h1 class="fs-3">Hello, <span class="text-success">@context.User.Identity?.Name.Split("@")[0]<span class="text-black">!</span> </span></h1>
+                </div>
+                <div class="nav-item">
+                    <a href="/makeDeposit" class="btn btn-primary">Transfer</a>
+                    <a href="/makeTransaction" class="btn btn-outline-primary">Deposit</a>
+                </div>
+            </nav>
+            <div class="row my-2">
+                @foreach (PageAlert alert in warnings) {
+                    <div class="alert alert-@(alert.Type.ToString().ToLower()) text-start">
+                        @(alert.Message)
+                    </div>
+                }
+            </div>
+        </div>
 
         <div class="container text-center">
-            <h1 class="fs-3">Hello, <span class="text-info">@context.User.Identity?.Name</span></h1>
-            <div class="row align-items-center justify-content-center">
-                <div class="col-md-5 col-8">
-
-                    @foreach (PageAlert alert in warnings)
-                    {
-                        <div class="alert alert-@(alert.Type.ToString().ToLower()) text-start">
-                            @(alert.Message)
-                        </div>
-                    }
-
-                    <div class="input-group">
-                        <input class="form-control form-control-lg" id="balance" readonly type="@(UserBalance.showingBalance)"
-                        value="@(UserBalance.showingBalance != "password" ? UserBalance.userBalance.Value.ToString() : "PlaceHolder")" />
-
-
-                        <div class="input-group-append d-flex gap-1">
-                            <div class="input-group-text">@(UserBalance.userBalance.CurrencyType)</div>
-
-                            <button type="button" style="z-index: unset;" class="btn btn-secondary"
-                            @onclick="UserBalance.ToggleVisualization">
-                                <i class="@(UserBalance.showingBalance == "password" ? "fa fa-eye-slash" : "fa fa-eye")"></i>
-                            </button>
-                        </div>
-
-                    </div>
-                    <div class="mt-2 float-end">
-                        <a class="btn btn-primary"> Deposit </a>
-                        <a class="btn btn-outline-danger"> Transfer </a>
-                    </div>
-                </div>
-            </div>
-            
+            <MakeTransaction loggedUser=@(loggedUser) />
         </div>
 
     </Authorized>
@@ -58,30 +47,21 @@
 
 @code {
     public List<PageAlert> warnings { get; set; } = [];
-    public BalanceVisualizer UserBalance { get; set; } = new();
     public ApplicationUser? loggedUser {get; set;}
 
     protected override async Task OnInitializedAsync() {
-        string keysWaning = "";
         loggedUser = await UserService.GetCurrentAuthUser();
         
         if (loggedUser != null) {
-            UserBalance.userBalance.Value = await UserService.GetUserBalance(loggedUser);
+            loggedUser.UserKeysList = await UserService.GetUserTransferKeys(loggedUser);
             if (loggedUser.EmailConfirmed == false) {
-                keysWaning += "<p> Your email is not confirmed, you cannot user it as a transfer key until it is confirmed. </p>";
+                string Waning = "<p> Your email is not confirmed, you cannot user it as a transfer key until it is confirmed. </p>";
+                warnings.Add(new PageAlert(Waning, AlertType.Warning) );
             }
-            if (loggedUser?.UserKeysList.Count == 0) {
-                keysWaning += "You do not have any keys configured to receive payments.<p> <a href='/Account/TransferKeys'>Configure it here.</a></p>";
-                warnings.Add(new PageAlert(keysWaning, AlertType.Warning) );
+            if (loggedUser.UserKeysList.Count == 0) {
+                string Waning = "You do not have any keys configured to receive payments.<p> <a href='/Account/TransferKeys'>Configure it here.</a></p>";
+                warnings.Add(new PageAlert(Waning, AlertType.Warning) );
             }
         } 
-    }
-
-
-    public class BalanceVisualizer {
-        public string showingBalance {get;set;} = "password";
-        public void ToggleVisualization() { showingBalance = showingBalance == "text" ? "password" : "text"; }
-        public Currency userBalance = new();
-        
     }
 }

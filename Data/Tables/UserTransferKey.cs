@@ -21,6 +21,7 @@ namespace UmbraChallenge.Data.Models
             Card,
             CPF,
             CNPJ,
+            Deposit,
 
         };
     

@@ -1,26 +1,109 @@
-@page "/makeTransaction"
-@attribute [Authorize]
-
+@using System.ComponentModel.DataAnnotations
+@using System.ComponentModel.DataAnnotations.Schema
 @using UmbraChallenge.Data.Models
+@using UmbraChallenge.Data.Services
 
-
-
-
-
+@inject NavigationManager NavigationManager;
+@inject IUserDatabaseService UserService;
+@rendermode InteractiveServer
 
 
 @code {
-    private InputTransaction Input {get; set;}
+    [Parameter]
+    public ApplicationUser? loggedUser { get; set; }
+    private InputTransaction Input { get; set; }
+    private List<UserTransferKey> similarKeysToInput {get; set;} = [];
     protected override void OnInitialized() {
         Input = new();
     }
-    protected override async Task OnInitializedAsync() {
-        
-    }
+    protected override async Task OnInitializedAsync()
+    {
 
-    public sealed class InputTransaction {
-        public UserTransferKey ReceiverKey {get; set;}
-        public double Ammount {get; set;}
-        
+    }
+    
+
+    public class InputTransaction {
+        public bool IsDeposit {get; set;} = false;
+        public UserTransferKey ReceiverKey { get; set; } = new()
+            {
+                KeyType = PossibleTransferKeys.Email,
+                KeyValue = "",
+                UserId = "", // will be set after.
+            };
+
+        [Required(ErrorMessage = "Amount is required.")]
+        [DataType(DataType.Currency)]
+        [Range(0, double.MaxValue, ErrorMessage = "Please enter a valid amount.")]
+        public double Ammount { get; set; }
+
+
+    }
+    private async Task fetchSimilarKeys() {
+        similarKeysToInput = await UserService.FetchSimilarKeysValues(Input.ReceiverKey.KeyValue);
+    }
+    private void toggleDeposit()
+    {
+        Input.ReceiverKey = new()
+            {
+                KeyType = PossibleTransferKeys.Email,
+                KeyValue = "",
+                UserId = "", // will be set after.
+            };
     }
 }
+
+
+<main class="container-fluid mt-3">
+    <EditForm FormName="NewTransactionForm" Model="Input" class="form-control text-start mx-auto" style="max-width: 680px;">
+        <DataAnnotationsValidator/>
+        <ValidationSummary />
+        <div class="form-check form-switch m-2">
+            <InputCheckbox @bind-Value="Input.IsDeposit" @onchange="toggleDeposit" class="form-check-input form-control"
+                type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+            <label class="form-check-label" for="flexSwitchCheckDefault">Make a deposit</label>
+        </div>
+        <hr>
+
+        @if (Input.IsDeposit) {
+        <div class="mb-3">
+            <div class="form-floating">
+                
+                <InputNumber @bind-Value="Input.Ammount" id="transferValue" min=0.00 placeholder="0.00 R$"  name="transferValue" required class="form-control " />
+                <label for="transferValue">Value Ammount</label>
+                <ValidationMessage For="() => Input.Ammount" class="text-danger" />
+            </div>
+            
+            <div class="mt-2 text-end">
+                <button type="submit" class="btn btn-primary">Confirm</button>
+            </div>
+            
+        </div>
+        } else {
+            <div class="mb-3">
+                <div>
+                    <button type="submit" class="btn btn-primary" disabled="@(similarKeysToInput.Count < 0)" >Confirm</button>
+                </div>
+                <div>
+
+                </div>
+            </div>
+        }
+
+        @if (!Input.IsDeposit) {
+            <div class="mb-3" role="form">
+                <div>
+                    <label for="KeyValue" class="form-label">Account Transfer Key</label>
+                    <InputText @bind-Value="Input.ReceiverKey.KeyValue" @onblur="fetchSimilarKeys" id="keyValue" name="keyValue" required
+                        class="form-control" />
+                    <ValidationMessage For="() => Input.ReceiverKey.KeyValue" class="text-danger" />
+                </div>
+
+            </div>
+        }
+
+    </EditForm>
+
+</main>
+
+
+

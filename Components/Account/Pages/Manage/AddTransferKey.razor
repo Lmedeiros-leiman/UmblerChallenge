@@ -16,7 +16,7 @@
 
     <div class="form-group mb-2">
         <InputSelect @bind-Value="Input.KeyType" id="keyType" name="keyType" required class="form-select">
-            @foreach (var option in Enum.GetValues<PossibleTransferKeys>().Except(new[] {PossibleTransferKeys.Email} ) ) {
+            @foreach (var option in Enum.GetValues<PossibleTransferKeys>().Except(new[] {PossibleTransferKeys.Email, PossibleTransferKeys.Deposit} ) ) {
                 <option value="@(option)"> @(option) </option>
             }
         </InputSelect>

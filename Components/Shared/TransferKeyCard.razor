@@ -1,1 +1,26 @@
-yo
+@using UmbraChallenge.Data.Models
+@using UmbraChallenge.Data.Services
+
+@code {
+    [Parameter]
+    public UserTransferKey transferKey {get; set;}
+}
+
+<div class="card">
+    <div class="card-body d-flex  justify-content-between">
+        <div>
+            @(transferKey.KeyType) |
+            @(transferKey.KeyValue)
+        </div>
+    
+    <div>
+        <button class="btn btn-danger">
+            Delete key
+        </button>
+        <button class="btn @(transferKey.IsActive ? "btn-danger" : "btn-primary" )">
+            @(transferKey.IsActive ? "Disable" : "Enable" )
+        </button>
+    </div>
+    
+    </div>
+</div>

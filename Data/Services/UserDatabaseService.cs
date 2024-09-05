@@ -1,9 +1,10 @@
 
 namespace UmbraChallenge.Data.Services {
+    using System.Collections.ObjectModel;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.EntityFrameworkCore;
     using UmbraChallenge.Components.Account.Pages.Manage;
-    using UmbraChallenge.Components.Pages;
+    using UmbraChallenge.Components.Shared;
     using UmbraChallenge.Data.Models;
     using UmbraChallenge.Models;
 
@@ -28,6 +29,7 @@ namespace UmbraChallenge.Data.Services {
         public Task<PageAlert> AddNewUserTransferKey(ApplicationUser user, AddTransferKey.InputKeyModel Input);
         public Task<PageAlert> RemoveUserTransferKey(ApplicationUser user, UserTransferKey targetKey);
         public Task<PageAlert> ToggleTransferKey(ApplicationUser user, UserTransferKey targetKey, bool newStatus);
+        public Task<List<UserTransferKey>> FetchSimilarKeysValues(string KeyValue);
         // toggles the transfer key activity, the key is still registered, just unusable.
 
 
@@ -80,6 +82,7 @@ namespace UmbraChallenge.Data.Services {
         }
         public async Task<PageAlert> MakeTransaction(ApplicationUser user, MakeTransaction.InputTransaction input) {
             _logger.LogInformation($"user ID: {user.Id} trying to make a new transaction.");
+            
 
             if (input.Ammount <= 0) {
                 return new PageAlert("We do not allow transfers of zero or negative amounts.", AlertType.Danger);
@@ -165,6 +168,12 @@ namespace UmbraChallenge.Data.Services {
             await _dbContext.SaveChangesAsync();
             _logger.LogInformation($"Key set to {databaseKey.IsActive.ToString()} for user ID: {user.Id}");
             return new PageAlert("Key updated.", AlertType.Success);
+        }
+
+        public async Task<List<UserTransferKey>> FetchSimilarKeysValues(string KeyValue) {
+            if (string.IsNullOrEmpty(KeyValue)) { return []; }
+
+            return await _dbContext.UserTransferKeys.Where( k => k.KeyValue.Contains(KeyValue) ).ToListAsync();
         }
     }
 }
