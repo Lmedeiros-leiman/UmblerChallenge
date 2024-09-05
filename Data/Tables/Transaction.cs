@@ -12,6 +12,11 @@ namespace UmbraChallenge.Data.Models
     // BUT it also includes transactions the users have with the platform itself.
     // it also handles money transfers and that by itself is scary enough.
     //
+    public enum TransactionStatus{
+        Valid,
+
+        Cancelled,
+    }
     [Table("Transactions")]
     public class Transaction {
         [Key]
@@ -23,7 +28,7 @@ namespace UmbraChallenge.Data.Models
         
         public readonly DateTime Timestamp = DateTime.UtcNow;
         
-        public Transaction? CancelationTransation {get; set;} // refers to a transaction that cancels this one.
+        public TransactionStatus Status {get; set;} = TransactionStatus.Valid;
 
     }
 }

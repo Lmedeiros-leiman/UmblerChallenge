@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Components;
 namespace UmbraChallenge.Models
 {
     public enum AlertType {
-            Info,
             Success,
+            Info,
             Warning,
             Danger
         }

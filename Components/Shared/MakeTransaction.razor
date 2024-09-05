@@ -38,22 +38,19 @@
         if (!Input.IsDeposit) {
             try {
                 Input.ReceiverKey = similarKeysToInput[selectedKeyIndex];
-            } catch (Exception error) { }
-        } else {
-            var userEmailKey = UserService.getk
+            } catch (Exception error) {
+                ErrorMessageList = [ new("Invalid key selected.", AlertType.Danger) ];
+                return;
+            }
         }
 
-        var message = await UserService.MakeTransaction(loggedUser, Input);
+        PageAlert transactionMessage = await UserService.MakeTransaction(loggedUser, Input);
 
-        if (message.Type == AlertType.Success) {
-            await JS.InvokeVoidAsync("alert", message.Message);
-            NavigationManager.NavigateTo("/",true);
-        } else {
-            ErrorMessageList = new() {message};
-            return;
-        }
+        await JS.InvokeVoidAsync("alert", $"{transactionMessage.Type} \n {transactionMessage.Message}" );
 
-        
+        NavigationManager.NavigateTo("/",true);
+        return;
+
     }
 
     public class InputTransaction {

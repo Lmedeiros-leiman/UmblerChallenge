@@ -51,9 +51,11 @@
             // also adds the email as a viable key.
             await SignInManager.SignInAsync(user, isPersistent: false, "Confirmation mail link");
             
-            await UserService.AddNewUserTransferKey(user, new () {KeyType=PossibleTransferKeys.Email ,KeyValue=user.Email});
-
-            RedirectManager.RedirectToWithStatus("/", result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.", HttpContext);
+            var keyRegisterResult = await UserService.AddNewUserTransferKey(user, new () {KeyType=PossibleTransferKeys.Email ,KeyValue=user.Email});
+            if (keyRegisterResult.Type <= Models.AlertType.Warning) {
+                RedirectManager.RedirectToWithStatus("/", "Thank you for confirming your email.", HttpContext);
+            }
+            RedirectManager.RedirectToWithStatus("/", "Error confirming your email.", HttpContext);
         }
     }
 }
