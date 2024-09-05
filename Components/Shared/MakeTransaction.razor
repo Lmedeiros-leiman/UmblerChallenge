@@ -1,29 +1,65 @@
 @using System.ComponentModel.DataAnnotations
 @using System.ComponentModel.DataAnnotations.Schema
+@using UmbraChallenge.Models
 @using UmbraChallenge.Data.Models
 @using UmbraChallenge.Data.Services
 
 @inject NavigationManager NavigationManager;
 @inject IUserDatabaseService UserService;
+@inject IJSRuntime JS
+
 @rendermode InteractiveServer
 
 
 @code {
     [Parameter]
     public ApplicationUser? loggedUser { get; set; }
+    public string fetchValue {get; set;} = string.Empty;
+    public int selectedKeyIndex {get; set;} = 0;
     private InputTransaction Input { get; set; }
-    private List<UserTransferKey> similarKeysToInput {get; set;} = [];
+    private List<UserTransferKey> similarKeysToInput { get; set; }
+    public List<PageAlert> ErrorMessageList {get; set;} = [];
     protected override void OnInitialized() {
+        similarKeysToInput = new();
         Input = new();
     }
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
 
     }
-    
+
+    public async Task CreateTransaction(EditContext editContext) {
+        if (loggedUser == null) {
+            // this is mostly to prevent the null value, should be impossible to get an unloged user this far.
+            return;
+        }
+        // this is fine because on a deposit the key will be ignored
+        // and on a transfer its also fine because the key gets reseted when the user modifies and leaves the transfer key input box.
+        // the try catch is to avoid the server from crashing if stuff actually goes down.
+        if (!Input.IsDeposit) {
+            try {
+                Input.ReceiverKey = similarKeysToInput[selectedKeyIndex];
+            } catch (Exception error) { }
+        } else {
+            var userEmailKey = UserService.getk
+        }
+
+        var message = await UserService.MakeTransaction(loggedUser, Input);
+
+        if (message.Type == AlertType.Success) {
+            await JS.InvokeVoidAsync("alert", message.Message);
+            NavigationManager.NavigateTo("/",true);
+        } else {
+            ErrorMessageList = new() {message};
+            return;
+        }
+
+        
+    }
 
     public class InputTransaction {
-        public bool IsDeposit {get; set;} = false;
+        public bool IsDeposit { get; set; } = false;
+        
+        [Required]
         public UserTransferKey ReceiverKey { get; set; } = new()
             {
                 KeyType = PossibleTransferKeys.Email,
@@ -39,71 +75,77 @@
 
     }
     private async Task fetchSimilarKeys() {
-        similarKeysToInput = await UserService.FetchSimilarKeysValues(Input.ReceiverKey.KeyValue);
-    }
-    private void toggleDeposit()
-    {
-        Input.ReceiverKey = new()
-            {
-                KeyType = PossibleTransferKeys.Email,
-                KeyValue = "",
-                UserId = "", // will be set after.
-            };
+        if (loggedUser != null) {
+            similarKeysToInput = await UserService.FetchSimilarKeysValues(fetchValue, loggedUser);
+        }
+        
     }
 }
 
+@foreach (PageAlert message in ErrorMessageList){
+    <div class=@($"alert alert-{message.Type}")>
+        <p>@(message.Message)</p>
+    </div>
+}
 
 <main class="container-fluid mt-3">
-    <EditForm FormName="NewTransactionForm" Model="Input" class="form-control text-start mx-auto" style="max-width: 680px;">
-        <DataAnnotationsValidator/>
+    <EditForm FormName="NewTransactionForm" OnValidSubmit="CreateTransaction" Model="Input" class="form-control text-start mx-auto"
+        style="max-width: 680px;">
+        <DataAnnotationsValidator />
         <ValidationSummary />
         <div class="form-check form-switch m-2">
-            <InputCheckbox @bind-Value="Input.IsDeposit" @onchange="toggleDeposit" class="form-check-input form-control"
+            <InputCheckbox @bind-Value=(Input.IsDeposit) class="form-check-input form-control"
                 type="checkbox" role="switch" id="flexSwitchCheckDefault" />
             <label class="form-check-label" for="flexSwitchCheckDefault">Make a deposit</label>
         </div>
         <hr>
 
-        @if (Input.IsDeposit) {
         <div class="mb-3">
-            <div class="form-floating">
-                
-                <InputNumber @bind-Value="Input.Ammount" id="transferValue" min=0.00 placeholder="0.00 R$"  name="transferValue" required class="form-control " />
-                <label for="transferValue">Value Ammount</label>
-                <ValidationMessage For="() => Input.Ammount" class="text-danger" />
+                <div class="form-floating">
+                    <InputNumber @bind-Value="Input.Ammount" id="transferValue" min=0.00 placeholder="0.00 R$"
+                        name="transferValue" required class="form-control " />
+                    <label for="transferValue">Value Ammount</label>
+                    <ValidationMessage For="() => Input.Ammount" class="text-danger" />
+                </div>
             </div>
-            
-            <div class="mt-2 text-end">
+
+        @if (Input.IsDeposit) {
+            <div class="mt-2 text-end mb-3">
                 <button type="submit" class="btn btn-primary">Confirm</button>
             </div>
-            
-        </div>
-        } else {
+        }
+        else
+        {
             <div class="mb-3">
-                <div>
-                    <button type="submit" class="btn btn-primary" disabled="@(similarKeysToInput.Count < 0)" >Confirm</button>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary " 
+                        disabled="@( selectedKeyIndex < 0 || selectedKeyIndex >= similarKeysToInput.Count() || similarKeysToInput[selectedKeyIndex] == null )" >Confirm</button>
+                </div>
+                <div class="mb-3 mt-1">
+                    <div>
+                        <label for="KeyValue" class="form-label">Account Transfer Key</label>
+                        <InputText @bind-Value="fetchValue" @onblur="fetchSimilarKeys" id="keyValue"
+                            name="keyValue" required class="form-control" />
+                        <ValidationMessage For="() => Input.ReceiverKey.KeyValue" class="text-danger" />
+                    </div>
                 </div>
                 <div>
-
+                    <InputRadioGroup @bind-Value="selectedKeyIndex" Name="selectedInputKey">
+                    @for (int i = 0; i < similarKeysToInput.Count; i ++) {
+                        <section class="card my-2">
+                            <main class="card-body justify-content-between">
+                                <p>@(similarKeysToInput[i].KeyType ) <span>| @(similarKeysToInput[i].User.UserName )</span></p>
+                            </main>
+                            <footer class="card-footer form-check px-5">
+                                <InputRadio Value="@(i)" class="form-check-input" />
+                                <label class="form-check-label">@(similarKeysToInput[i].KeyValue)</label>
+                            </footer>
+                        </section>
+                        
+                    }
+                    </InputRadioGroup>
                 </div>
             </div>
         }
-
-        @if (!Input.IsDeposit) {
-            <div class="mb-3" role="form">
-                <div>
-                    <label for="KeyValue" class="form-label">Account Transfer Key</label>
-                    <InputText @bind-Value="Input.ReceiverKey.KeyValue" @onblur="fetchSimilarKeys" id="keyValue" name="keyValue" required
-                        class="form-control" />
-                    <ValidationMessage For="() => Input.ReceiverKey.KeyValue" class="text-danger" />
-                </div>
-
-            </div>
-        }
-
     </EditForm>
-
 </main>
-
-
-

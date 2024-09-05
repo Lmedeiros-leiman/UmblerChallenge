@@ -29,7 +29,7 @@ namespace UmbraChallenge.Data.Services {
         public Task<PageAlert> AddNewUserTransferKey(ApplicationUser user, AddTransferKey.InputKeyModel Input);
         public Task<PageAlert> RemoveUserTransferKey(ApplicationUser user, UserTransferKey targetKey);
         public Task<PageAlert> ToggleTransferKey(ApplicationUser user, UserTransferKey targetKey, bool newStatus);
-        public Task<List<UserTransferKey>> FetchSimilarKeysValues(string KeyValue);
+        public Task<List<UserTransferKey>> FetchSimilarKeysValues(string KeyValue, ApplicationUser user);
         // toggles the transfer key activity, the key is still registered, just unusable.
 
 
@@ -76,7 +76,7 @@ namespace UmbraChallenge.Data.Services {
         //
         public async Task<double> GetUserBalance(ApplicationUser user) {
             var userTransactions = await this.GetUserTransactions(user);
-            var paymentsTotal = userTransactions.Sum(t => t.Sender.Id == user.Id ? -t.TransferAmmount : t.TransferAmmount);
+            var paymentsTotal = userTransactions.Sum(t => t.Sender.Id == user.Id && t.Receiver.User.Id == user.Id ? -t.TransferAmmount : t.TransferAmmount);
 
             return paymentsTotal;
         }
@@ -86,6 +86,21 @@ namespace UmbraChallenge.Data.Services {
 
             if (input.Ammount <= 0) {
                 return new PageAlert("We do not allow transfers of zero or negative amounts.", AlertType.Danger);
+            }
+
+            if (input.IsDeposit) {
+                    // deposits will automatically deposit into the email key of the user.
+                    // if there isnt one, create it. BUT set to inactive if the user did not validate it.
+                    //
+                    Transaction newTransaction = new() {Sender = user, , TransferAmmount = input.Ammount  };
+                    
+                    while ( await _dbContext.Transactions.FindAsync(newTransaction.TransactionId) != null) {
+                        newTransaction.TransactionId = Guid.NewGuid().ToString();
+                    }
+
+
+
+                    return new ("Sucessfully deposited into you account.",AlertType.Success);
             }
 
             var databaseReceivingKey = await _dbContext.UserTransferKeys.FindAsync(input.ReceiverKey.KeyId);
@@ -118,8 +133,19 @@ namespace UmbraChallenge.Data.Services {
         // UserTransferKeys related
         //
         public async Task<PageAlert> AddNewUserTransferKey(ApplicationUser user, AddTransferKey.InputKeyModel Input) {
+            // checks if the user already has an key of this type.
+            if (await _dbContext.UserTransferKeys.AnyAsync(k => k.KeyType == Input.KeyType && k.User.Id == user.Id)) {
+                return new PageAlert("User already has a key of this type.", AlertType.Warning);
+            }
+            
             try {
+                
                 var newKey = new UserTransferKey() { UserId = user.Id ,KeyValue = Input.KeyValue, KeyType = Input.KeyType, User = user };
+                
+                // user can only use keys when the email is confirmed.
+                if (user.EmailConfirmed == false) {
+                    newKey.IsActive = false;
+                }
                 // makes sure the key ID is unique.
                 while (await _dbContext.UserTransferKeys.FindAsync(newKey.KeyId) != null) {
                     newKey.KeyId = Guid.NewGuid().ToString();
@@ -170,10 +196,10 @@ namespace UmbraChallenge.Data.Services {
             return new PageAlert("Key updated.", AlertType.Success);
         }
 
-        public async Task<List<UserTransferKey>> FetchSimilarKeysValues(string KeyValue) {
+        public async Task<List<UserTransferKey>> FetchSimilarKeysValues(string KeyValue, ApplicationUser loggedUser) {
             if (string.IsNullOrEmpty(KeyValue)) { return []; }
 
-            return await _dbContext.UserTransferKeys.Where( k => k.KeyValue.Contains(KeyValue) ).ToListAsync();
+            return await _dbContext.UserTransferKeys.Where( k => k.KeyValue.Contains(KeyValue) && k.User.Id != loggedUser.Id ).Include(k => k.User).ToListAsync();
         }
     }
 }
