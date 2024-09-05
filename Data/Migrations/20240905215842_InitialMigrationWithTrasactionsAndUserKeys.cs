@@ -187,7 +187,7 @@ namespace UmbraChallenge.Migrations
                     SenderId = table.Column<string>(type: "TEXT", nullable: false),
                     ReceiverKeyId = table.Column<string>(type: "TEXT", nullable: false),
                     TransferAmmount = table.Column<double>(type: "REAL", nullable: false),
-                    CancelationTransationTransactionId = table.Column<string>(type: "TEXT", nullable: true)
+                    Status = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -198,11 +198,6 @@ namespace UmbraChallenge.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Transactions_Transactions_CancelationTransationTransactionId",
-                        column: x => x.CancelationTransationTransactionId,
-                        principalTable: "Transactions",
-                        principalColumn: "TransactionId");
                     table.ForeignKey(
                         name: "FK_Transactions_UserTransferKeys_ReceiverKeyId",
                         column: x => x.ReceiverKeyId,
@@ -216,9 +211,9 @@ namespace UmbraChallenge.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "176403f3-37b3-410a-9214-ded296964ee8", 0, "7eaf8dbd-75ba-4bb4-a2f6-758fc54c0677", "john@localhost", true, false, null, "JOHN@LOCALHOST", null, null, null, false, "772c3ca0-2748-4a9a-92f7-fd9846051b3e", false, "john@localhost" },
-                    { "649aa4e4-e88c-4132-baa2-f62922e77103", 0, "44359f4d-67c1-470f-bb76-6d1a3e4d9ce9", "maria@localhost", true, false, null, "MARIA@LOCALHOST", null, null, null, false, "303d4655-c2c9-4cd1-b4df-546639a8c89d", false, "maria@localhost" },
-                    { "e4431a30-c08d-4861-9aff-db90e2170bdf", 0, "1eb4498c-8b26-4682-87c6-6d9550572719", "admin@localhost", true, false, null, "ADMIN@LOCALHOST", null, null, null, false, "76fd2ffa-911a-46d6-943d-3cfb39734d50", false, "admin@localhost" }
+                    { "0d538767-8b8b-4240-abca-34d952da411e", 0, "17ad5c99-c7c8-457c-9748-eb55e796a7e0", "john@localhost", true, false, null, "JOHN@LOCALHOST", null, null, null, false, "2d00218d-797b-478d-a7ec-a3f5ec3ff84f", false, "john@localhost" },
+                    { "78465ef5-22df-4d9f-b994-6b266ef92b69", 0, "23adb6cb-6606-4bc7-b54b-6bcc91dc3393", "maria@localhost", true, false, null, "MARIA@LOCALHOST", null, null, null, false, "1eab1396-142e-4803-b14d-913a97cb019d", false, "maria@localhost" },
+                    { "cfd7b860-eb4b-4e1b-8793-5a8186ca19e6", 0, "4a492724-72c8-401f-ae21-0868d15190d5", "admin@localhost", true, false, null, "ADMIN@LOCALHOST", null, null, null, false, "61d4ec1e-6b57-46d7-b6c3-03da6cf28947", false, "admin@localhost" }
                 });
 
             migrationBuilder.InsertData(
@@ -226,9 +221,9 @@ namespace UmbraChallenge.Migrations
                 columns: new[] { "KeyId", "IsActive", "KeyType", "KeyValue", "UserId" },
                 values: new object[,]
                 {
-                    { "040e896f-47e0-4f3a-8478-3f4fd727c4d1", true, 0, "john@localhost", "176403f3-37b3-410a-9214-ded296964ee8" },
-                    { "a146580d-17ab-440f-a037-618aca2f5e4b", true, 0, "admin@localhost", "e4431a30-c08d-4861-9aff-db90e2170bdf" },
-                    { "e2c52d3b-e488-46ff-86c3-f76b3eaf3213", true, 0, "maria@localhost", "649aa4e4-e88c-4132-baa2-f62922e77103" }
+                    { "1026e375-9fdc-4766-820a-c34283706f98", true, 0, "admin@localhost", "cfd7b860-eb4b-4e1b-8793-5a8186ca19e6" },
+                    { "2e5734b4-895f-4fad-9ce0-7c0d18254082", true, 0, "maria@localhost", "78465ef5-22df-4d9f-b994-6b266ef92b69" },
+                    { "d9d61c92-c25f-4d9e-8c24-a41b65983ebb", true, 0, "john@localhost", "0d538767-8b8b-4240-abca-34d952da411e" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -267,11 +262,6 @@ namespace UmbraChallenge.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Transactions_CancelationTransationTransactionId",
-                table: "Transactions",
-                column: "CancelationTransationTransactionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transactions_ReceiverKeyId",

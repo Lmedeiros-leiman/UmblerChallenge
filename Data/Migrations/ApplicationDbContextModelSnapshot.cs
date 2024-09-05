@@ -211,43 +211,43 @@ namespace UmbraChallenge.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e4431a30-c08d-4861-9aff-db90e2170bdf",
+                            Id = "cfd7b860-eb4b-4e1b-8793-5a8186ca19e6",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1eb4498c-8b26-4682-87c6-6d9550572719",
+                            ConcurrencyStamp = "4a492724-72c8-401f-ae21-0868d15190d5",
                             Email = "admin@localhost",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "76fd2ffa-911a-46d6-943d-3cfb39734d50",
+                            SecurityStamp = "61d4ec1e-6b57-46d7-b6c3-03da6cf28947",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost"
                         },
                         new
                         {
-                            Id = "176403f3-37b3-410a-9214-ded296964ee8",
+                            Id = "0d538767-8b8b-4240-abca-34d952da411e",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7eaf8dbd-75ba-4bb4-a2f6-758fc54c0677",
+                            ConcurrencyStamp = "17ad5c99-c7c8-457c-9748-eb55e796a7e0",
                             Email = "john@localhost",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "JOHN@LOCALHOST",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "772c3ca0-2748-4a9a-92f7-fd9846051b3e",
+                            SecurityStamp = "2d00218d-797b-478d-a7ec-a3f5ec3ff84f",
                             TwoFactorEnabled = false,
                             UserName = "john@localhost"
                         },
                         new
                         {
-                            Id = "649aa4e4-e88c-4132-baa2-f62922e77103",
+                            Id = "78465ef5-22df-4d9f-b994-6b266ef92b69",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "44359f4d-67c1-470f-bb76-6d1a3e4d9ce9",
+                            ConcurrencyStamp = "23adb6cb-6606-4bc7-b54b-6bcc91dc3393",
                             Email = "maria@localhost",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "MARIA@LOCALHOST",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "303d4655-c2c9-4cd1-b4df-546639a8c89d",
+                            SecurityStamp = "1eab1396-142e-4803-b14d-913a97cb019d",
                             TwoFactorEnabled = false,
                             UserName = "maria@localhost"
                         });
@@ -258,9 +258,6 @@ namespace UmbraChallenge.Migrations
                     b.Property<string>("TransactionId")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("CancelationTransationTransactionId")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("ReceiverKeyId")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -269,12 +266,13 @@ namespace UmbraChallenge.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
                     b.Property<double>("TransferAmmount")
                         .HasColumnType("REAL");
 
                     b.HasKey("TransactionId");
-
-                    b.HasIndex("CancelationTransationTransactionId");
 
                     b.HasIndex("ReceiverKeyId");
 
@@ -311,27 +309,27 @@ namespace UmbraChallenge.Migrations
                     b.HasData(
                         new
                         {
-                            KeyId = "a146580d-17ab-440f-a037-618aca2f5e4b",
+                            KeyId = "1026e375-9fdc-4766-820a-c34283706f98",
                             IsActive = true,
                             KeyType = 0,
                             KeyValue = "admin@localhost",
-                            UserId = "e4431a30-c08d-4861-9aff-db90e2170bdf"
+                            UserId = "cfd7b860-eb4b-4e1b-8793-5a8186ca19e6"
                         },
                         new
                         {
-                            KeyId = "040e896f-47e0-4f3a-8478-3f4fd727c4d1",
+                            KeyId = "d9d61c92-c25f-4d9e-8c24-a41b65983ebb",
                             IsActive = true,
                             KeyType = 0,
                             KeyValue = "john@localhost",
-                            UserId = "176403f3-37b3-410a-9214-ded296964ee8"
+                            UserId = "0d538767-8b8b-4240-abca-34d952da411e"
                         },
                         new
                         {
-                            KeyId = "e2c52d3b-e488-46ff-86c3-f76b3eaf3213",
+                            KeyId = "2e5734b4-895f-4fad-9ce0-7c0d18254082",
                             IsActive = true,
                             KeyType = 0,
                             KeyValue = "maria@localhost",
-                            UserId = "649aa4e4-e88c-4132-baa2-f62922e77103"
+                            UserId = "78465ef5-22df-4d9f-b994-6b266ef92b69"
                         });
                 });
 
@@ -388,10 +386,6 @@ namespace UmbraChallenge.Migrations
 
             modelBuilder.Entity("UmbraChallenge.Data.Models.Transaction", b =>
                 {
-                    b.HasOne("UmbraChallenge.Data.Models.Transaction", "CancelationTransation")
-                        .WithMany()
-                        .HasForeignKey("CancelationTransationTransactionId");
-
                     b.HasOne("UmbraChallenge.Data.Models.UserTransferKey", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverKeyId")
@@ -403,8 +397,6 @@ namespace UmbraChallenge.Migrations
                         .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CancelationTransation");
 
                     b.Navigation("Receiver");
 

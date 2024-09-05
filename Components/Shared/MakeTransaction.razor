@@ -46,6 +46,12 @@
 
         PageAlert transactionMessage = await UserService.MakeTransaction(loggedUser, Input);
 
+        Input.ReceiverKey = new() {
+            KeyType = PossibleTransferKeys.Email,
+            KeyValue = "",
+            UserId = ""
+        }; // prevents double form submission.
+
         await JS.InvokeVoidAsync("alert", $"{transactionMessage.Type} \n {transactionMessage.Message}" );
 
         NavigationManager.NavigateTo("/",true);

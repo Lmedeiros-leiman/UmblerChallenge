@@ -15,7 +15,7 @@ namespace UmbraChallenge.Data.Services {
         // preferably used on all routes that require authentication.
         public Task<ICollection<UserTransferKey>> GetUserTransferKeys(ApplicationUser user);
         public Task<ICollection<Transaction>> GetUserTransactions(ApplicationUser user, bool includeCancelled = false);
-        public Task<double> GetUserBalance(ApplicationUser user);
+        public Task<double> GetUserBalance(ApplicationUser user, bool calculateCancelled = false);
 
         //
         // Trasactions related
@@ -72,7 +72,7 @@ namespace UmbraChallenge.Data.Services {
         }
         public async Task<ICollection<Transaction>> GetUserTransactions(ApplicationUser user, bool includeCancelled = false) {
             
-            if (!includeCancelled) {
+            if (includeCancelled == false) {
                 return await _dbContext.Transactions
                     .Where(t => 
                         t.Receiver.User.Id == user.Id || 
@@ -90,7 +90,7 @@ namespace UmbraChallenge.Data.Services {
         //
         // Trasactions related
         //
-        public async Task<double> GetUserBalance(ApplicationUser user) {
+        public async Task<double> GetUserBalance(ApplicationUser user, bool calculateCancelled = false) {
             var userTransactions = await this.GetUserTransactions(user);
 
             // if the sender is the user AND the receiver is also the user, its a deposit.
@@ -98,19 +98,27 @@ namespace UmbraChallenge.Data.Services {
             //
             double paymentsTotal = 0.00d;
 
-            foreach (Transaction transaction in userTransactions) {
-                if (transaction.Sender.Id == user.Id && transaction.Receiver.User.Id == user.Id) {
-                    // its a deposit
-                    paymentsTotal += transaction.TransferAmmount;
-                }
+            for (int i = 0; i < userTransactions.Count; i++) {
+                Transaction currentTransaction = userTransactions.ElementAt(i);
 
-                if (transaction.Sender.Id != transaction.Receiver.User.Id) {
-                    // its a payment
-                    paymentsTotal -= transaction.TransferAmmount;
-                }
-                else {
-                    // its an arival transaction
-                    paymentsTotal += transaction.TransferAmmount;
+                if (currentTransaction.Status == TransactionStatus.Cancelled && calculateCancelled == false) { continue;}
+
+                if (currentTransaction.Sender.Id == user.Id) {
+                    if (currentTransaction.Receiver.User.Id == user.Id) {
+                        // its a deposit.
+                        paymentsTotal += currentTransaction.TransferAmmount;
+                        continue;
+                    } else {
+                        // its a Transaction to another user
+                        paymentsTotal -= currentTransaction.TransferAmmount;
+                        continue;
+                    }
+                } else {
+                    if (currentTransaction.Receiver.User.Id == user.Id) {
+                        // its a Transaction to this user
+                        paymentsTotal += currentTransaction.TransferAmmount;
+                        continue;
+                    }
                 }
             }
 
