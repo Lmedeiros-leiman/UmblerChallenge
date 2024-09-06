@@ -1,6 +1,7 @@
 
 namespace UmbraChallenge.Data.Services {
     using System.Collections.ObjectModel;
+    using System.Text.Json;
     using Microsoft.AspNetCore.Components.Authorization;
     using Microsoft.CodeAnalysis;
     using Microsoft.EntityFrameworkCore;
@@ -71,21 +72,69 @@ namespace UmbraChallenge.Data.Services {
             return await _dbContext.UserTransferKeys.Where(k => k.User.Id == user.Id).ToListAsync();
         }
         public async Task<ICollection<Transaction>> GetUserTransactions(ApplicationUser user, bool includeCancelled = false) {
-            
-            if (includeCancelled == false) {
-                return await _dbContext.Transactions
-                    .Where(t => 
-                        t.Receiver.User.Id == user.Id || 
-                        t.Sender.Id == user.Id)
-                    .ToListAsync();
-            } else {
-                return await _dbContext.Transactions
-                    .Where(t => 
-                        t.Receiver.User.Id == user.Id || 
-                        t.Sender.Id == user.Id && 
-                        t.Status != TransactionStatus.Cancelled)
-                    .ToListAsync();
-            }
+            // unfortunatelly if we call an Application user the app resolves into an infinite loop. 
+            // so we have to MANUALLY include what we need.
+
+            var transactions = await _dbContext.Transactions
+                .Where(t =>
+                    (t.Receiver.UserId == user.Id || t.Sender.Id == user.Id) &&
+                    (t.Status != TransactionStatus.Cancelled || includeCancelled == true) )
+                .Select(t => new {
+                    t.TransactionId,
+                    t.TransferAmmount,
+                    t.Timestamp,
+                    Sender = new {
+                        t.Sender.Id,
+                        t.Sender.UserName,
+                        t.Sender.Email,
+                    },
+                    Receiver = new {
+                        t.Receiver.KeyId,
+                        t.Receiver.UserId,
+                        t.Receiver.KeyValue,
+                        t.Receiver.KeyType,
+                        t.Receiver.IsActive,
+                        t.Receiver.CreationTimeStamp,
+                        User = new {
+                            t.Receiver.User.Id,
+                            t.Receiver.User.Email,
+                            t.Receiver.User.UserName,
+                        }
+                    },
+                    t.Status,
+                })
+                .AsNoTracking()
+                .ToListAsync();
+
+                ICollection<Transaction> builtTransactionsResult = [];
+                foreach( var t in transactions) {
+                    Transaction transactionModel = new() {
+                        Status = t.Status, 
+                        Timestamp = t.Timestamp,
+                        TransactionId = t.TransactionId, 
+                        TransferAmmount = t.TransferAmmount,
+                        Receiver = new() {
+                            User = new() {
+                                Id = t.Receiver.User.Id,
+                                Email = t.Receiver.User.Email,
+                                UserName = t.Receiver.User.UserName,
+                            },
+                            UserId = t.Receiver.UserId,
+                            KeyValue = t.Receiver.KeyValue,
+                            KeyType = t.Receiver.KeyType,
+                            KeyId = t.Receiver.KeyId,
+                            IsActive = t.Receiver.IsActive,
+                            CreationTimeStamp = t.Receiver.CreationTimeStamp
+                            },
+                        Sender = new () {
+                            Id = t.Sender.Id,
+                            Email = t.Sender.Email,
+                            UserName = t.Sender.UserName,
+                        }
+                    };
+                    builtTransactionsResult.Add(transactionModel);
+                }
+                return builtTransactionsResult.OrderByDescending(t => t.Timestamp).ToList(); ;
         }
         //
         // Trasactions related
@@ -177,15 +226,17 @@ namespace UmbraChallenge.Data.Services {
         }
         
         public async Task<PageAlert> CancelTransaction(ApplicationUser user, Transaction targetTransaction) {
+            if ( string.IsNullOrEmpty(targetTransaction.TransactionId) ) { return new("Transaction ID is not valid.", AlertType.Danger);}
             
             var databaseTransaction = await _dbContext.Transactions.FindAsync(targetTransaction.TransactionId);
+            Console.WriteLine(JsonSerializer.Serialize(databaseTransaction));
             if (databaseTransaction == null) { return new("Transaction not found.", AlertType.Danger); }
             
-            if (databaseTransaction.Sender.Id != user.Id) { return new("You can only cancel your own transactions.", AlertType.Danger); }
+            //if (databaseTransaction.Sender.Id != user.Id) { return new("You can only cancel your own transactions.", AlertType.Danger); }
             
             databaseTransaction.Status = TransactionStatus.Cancelled;
             await _dbContext.SaveChangesAsync();
-
+            
             return new PageAlert( "Transaction cancelled sucessfully." ,AlertType.Success);
         }
         
@@ -202,10 +253,7 @@ namespace UmbraChallenge.Data.Services {
 
                 var newKey = new UserTransferKey() { UserId = user.Id, KeyValue = Input.KeyValue, KeyType = Input.KeyType, User = user };
 
-                // user can only use keys when the email is confirmed.
-                if (user.EmailConfirmed == false) {
-                    newKey.IsActive = false;
-                }
+                
                 // makes sure the key ID is unique.
                 while (await _dbContext.UserTransferKeys.FindAsync(newKey.KeyId) != null) {
                     newKey.KeyId = Guid.NewGuid().ToString();
@@ -265,9 +313,7 @@ namespace UmbraChallenge.Data.Services {
                 return new PageAlert("Key does not belog to this account.", AlertType.Danger);
             }
 
-            if (user.EmailConfirmed == false) {
-                return new PageAlert("User email is not confirmer", AlertType.Warning);
-            }
+            
 
             databaseKey.IsActive = newStatus;
             await _dbContext.SaveChangesAsync();

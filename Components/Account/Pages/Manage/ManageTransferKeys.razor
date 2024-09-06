@@ -50,10 +50,10 @@
         }
         else
         {
-            @foreach (UserTransferKey key in loggedUser?.UserKeysList)
+            @foreach (UserTransferKey key in loggedUser.UserKeysList)
             {
                 <section>
-                    <TransferKeyCard transferKey=@(key) />
+                    <TransferKeyCard loggedUser=@(loggedUser) transferKey=@(key) />
                 </section>
             }
         }

@@ -1,9 +1,25 @@
-@using UmbraChallenge.Data.Models
+@attribute [Authorize]
+@rendermode InteractiveServer
+
 @using UmbraChallenge.Data.Services
+@using UmbraChallenge.Data.Models
+@using UmbraChallenge.Components.Shared
+
+@inject IUserDatabaseService UserService;
+@inject NavigationManager NavigationManager
+
 
 @code {
     [Parameter]
     public UserTransferKey transferKey {get; set;}
+    [Parameter]
+    public ApplicationUser loggedUser {get; set;}
+
+    public async Task DeleteKey() {
+        var result = await UserService.RemoveUserTransferKey(loggedUser, transferKey);
+        NavigationManager.NavigateTo("/Account/TransferKeys", true);
+        return;
+    }
 }
 
 <div class="card">
@@ -14,12 +30,14 @@
         </div>
     
     <div>
-        <button class="btn btn-danger">
-            Delete key
-        </button>
-        <button class="btn @(transferKey.IsActive ? "btn-danger" : "btn-primary" )">
-            @(transferKey.IsActive ? "Disable" : "Enable" )
-        </button>
+        @if (transferKey.KeyType == PossibleTransferKeys.Email) {
+            <button class="btn btn-warning" disabled>Email key is Required.</button>
+        } else {
+            <button class="btn btn-danger" @onclick="DeleteKey">
+                Delete key
+            </button>
+        }
+        
     </div>
     
     </div>

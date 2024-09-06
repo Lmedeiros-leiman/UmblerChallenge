@@ -6,9 +6,11 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using UmbraChallenge.Data.Models
+@using UmbraChallenge.Data.Services
 
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserStore<ApplicationUser> UserStore
+@inject UserDatabaseService UserService
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IEmailSender<ApplicationUser> EmailSender
 @inject ILogger<Register> Logger
@@ -58,7 +60,7 @@
 </div>
 
 @code {
-    private IEnumerable<IdentityError>? identityErrors;
+    //private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -74,6 +76,7 @@
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        await emailStore.SetEmailConfirmedAsync(user, true, CancellationToken.None);
         var result = await UserManager.CreateAsync(user, Input.Password);
 
         if (!result.Succeeded) {
@@ -81,13 +84,16 @@
             return;
         }
         Logger.LogInformation("User created a new account with password.");
+        var keyRegisterResult = await UserService.AddNewUserTransferKey(user, new () {KeyType=PossibleTransferKeys.Email ,KeyValue=user.Email});
 
+        /* sends email to the user to confirm their email.
         var userId = await UserManager.GetUserIdAsync(user);
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         var callbackUrl = NavigationManager.GetUriWithQueryParameters(
             NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
             new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+        
         
         try {
             await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
@@ -96,6 +102,7 @@
             Message += $"Error: {string.Join(", ", result.Errors.Select(error => error.Description))}";
             return;
         }
+        */
 
         if (UserManager.Options.SignIn.RequireConfirmedAccount)
         {

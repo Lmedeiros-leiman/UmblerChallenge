@@ -17,14 +17,11 @@
     public string fetchValue {get; set;} = string.Empty;
     public int selectedKeyIndex {get; set;} = 0;
     private InputTransaction Input { get; set; }
-    private List<UserTransferKey> similarKeysToInput { get; set; }
+    private List<UserTransferKey> similarKeysToInput { get; set; } = [];
     public List<PageAlert> ErrorMessageList {get; set;} = [];
     protected override void OnInitialized() {
         similarKeysToInput = new();
         Input = new();
-    }
-    protected override async Task OnInitializedAsync() {
-
     }
 
     public async Task CreateTransaction(EditContext editContext) {

@@ -1,54 +1,126 @@
 @using UmbraChallenge.Data.Models
+@using UmbraChallenge.Models
+@using UmbraChallenge.Data.Services
+
+@rendermode InteractiveServer
+
+@inject IUserDatabaseService UserService
+
 @code {
     [Parameter]
     public required Transaction transaction { get; set; }
+    [Parameter]
+    public required ApplicationUser logedUser { get; set; }
 
+
+    public enum TransactionType {
+        Payment,
+        Transference,
+        Deposit,
+    }
+    public TransactionType findType() {
+        if (transaction.Receiver.UserId == transaction.Sender.Id ) {
+            return TransactionType.Deposit;
+        }
+        if (transaction.Receiver.User.Id != transaction.Sender.Id) {
+            if (transaction.Receiver.User.Id == logedUser.Id )
+            {
+                return TransactionType.Payment;
+            } else {
+                return TransactionType.Transference;
+            }
+
+        }
+        return TransactionType.Transference;
+    }
+    protected override void OnInitialized() {
+        CurrentType = findType();
+    }
+    
+    public TransactionType CurrentType { get; set; } = TransactionType.Deposit;
+
+    public string FormatDate(DateTime date) {
+        if (date.ToLocalTime().Day == DateTime.Now.Day) {
+            return date.ToLocalTime().ToString("T");
+        }
+        if (date.ToLocalTime().Year > DateTime.Now.Year) {
+            return date.ToLocalTime().ToString("dd/MM/yyyy");
+        } else {
+            return date.ToLocalTime().ToString("dd / MMM").ToUpper();
+        }
+
+    }
+    public async Task CancelTransaction() {
+        if (logedUser == null || transaction == null)  {
+            return;
+        }
+        var cancelAlert = await UserService.CancelTransaction(logedUser, transaction);
+        
+        if (cancelAlert.Type == Models.AlertType.Success) {
+            transaction.Status = TransactionStatus.Cancelled;
+        }
+    }
 }
-
 
 
 <AuthorizeView>
     <Authorized>
-
-    
-<section class="card" style="max-width: 560px;">
-    <main class="card-body px-1 py-2 d-flex flex-wrap">
-        <div class="p-1">
-            
-            <div class="rounded-circle bg-success" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
-                <img src="./assets/icons/@( transaction.Receiver.User.Email == context.User.Identity.Name ? "Received" : "Transfered" ).svg" width="70%" height="70%" />
-            </div>
-
-        </div>
-        
-        <div class="bg-danger d-flex mx-2 justify-content-between align-items-start flex-grow-1">
-            <div class=" fw-bold ">
-                @if (transaction.Receiver.User.Email == context.User.Identity.Name) {
-                    @("Transference Received.");
-                } else {
-                    @("Transference Sent.");
-                }
-                
-            </div>
-            <div class=" fw-bold fst-italic">
-                @if (DateTime.Now.Year > transaction.Timestamp.Year) {
-                    // if this transaction is older than a year
-                    @(transaction.Timestamp.ToLocalTime().ToString("dd/MM/yyyy"))
-                } else {
-                    // 
-                    @(transaction.Timestamp.ToLocalTime().ToString("dd/MM"))
-                }
-                
-            </div>
-            <div class="w-100">
-                bottom
-            </div>
-        </div>
-        
-
-    </main>
-
-</section>
-
+        <section class="card shadow-lg @(transaction.Status == TransactionStatus.Valid ? "" : "bg-secondary text-white")" style="max-width: 560px;">
+            <main class="card-body  px-0 py-2 d-flex flex-wrap">
+                <div class="p-1">
+                    <div class="rounded-circle bg-success"
+                        style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                        @if (CurrentType == TransactionType.Deposit)
+                        {
+                            <div class="rounded-circle bg-success"
+                                style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                                <img src="./assets/icons/Received.svg" width="70%" height="70%" />
+                            </div>
+                        }
+                        @if (CurrentType == TransactionType.Transference)
+                        {
+                            <div class="rounded-circle bg-success"
+                                style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                                <img src="./assets/icons/Received.svg" width="70%" height="70%" />
+                            </div>
+                        }
+                        @if (CurrentType == TransactionType.Payment)
+                        {
+                            <div class="rounded-circle bg-secondary"
+                                style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                                <img src="./assets/icons/Transfered.svg" width="70%" height="70%" />
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="text-start d-flex flex-grow-1 flex-column px-1">
+                    <header class="w-100 pt-2 d-flex justify-content-between fw-bold">
+                        
+                        <div>
+                            @(transaction.Receiver.User.Email == logedUser.Email ? "Received." : "Sent.") | <span class="text-success fw-bold"> @(transaction.TransferAmmount) R$ </span>
+                        </div>
+                        <div class="fst-italic text-secondary">
+                            @(FormatDate(transaction.Timestamp))
+                        </div>
+                        
+                    </header>
+                    <section class="d-flex justify-content-between">
+                        <div>
+                            @(transaction.Sender)
+                        </div>
+                        <div>
+                            @if (transaction.Status != TransactionStatus.Cancelled) {
+                                <button @onclick="CancelTransaction" class="btn btn-danger btn-sm">Cancel transation</button>
+                            } else {
+                                <button disabled class="btn btn-danger btn-sm">Transaction Cancelled.</button>
+                            }
+                            
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </section>
     </Authorized>
 </AuthorizeView>
+
+
