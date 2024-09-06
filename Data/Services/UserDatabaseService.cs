@@ -229,7 +229,7 @@ namespace UmbraChallenge.Data.Services {
             if ( string.IsNullOrEmpty(targetTransaction.TransactionId) ) { return new("Transaction ID is not valid.", AlertType.Danger);}
             
             var databaseTransaction = await _dbContext.Transactions.FindAsync(targetTransaction.TransactionId);
-            Console.WriteLine(JsonSerializer.Serialize(databaseTransaction));
+            
             if (databaseTransaction == null) { return new("Transaction not found.", AlertType.Danger); }
             
             //if (databaseTransaction.Sender.Id != user.Id) { return new("You can only cancel your own transactions.", AlertType.Danger); }

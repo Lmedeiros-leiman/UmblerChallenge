@@ -4,6 +4,7 @@
 @using UmbraChallenge.Data
 @using UmbraChallenge.Models
 
+@rendermode InteractiveServer
 @attribute [Authorize]
 @page "/Transations"
 
@@ -18,7 +19,7 @@
         if (loggedUser == null)
         {
             // repeats until the user gets logged in.
-            base.OnInitializedAsync();
+            await base.OnInitializedAsync();
         }
         if (loggedUser != null)
         {

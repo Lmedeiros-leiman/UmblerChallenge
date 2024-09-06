@@ -13,50 +13,65 @@
     public required ApplicationUser logedUser { get; set; }
 
 
-    public enum TransactionType {
+    public enum TransactionType
+    {
         Payment,
         Transference,
         Deposit,
     }
-    public TransactionType findType() {
-        if (transaction.Receiver.UserId == transaction.Sender.Id ) {
+    public TransactionType findType()
+    {
+        if (transaction.Receiver.UserId == transaction.Sender.Id)
+        {
             return TransactionType.Deposit;
         }
-        if (transaction.Receiver.User.Id != transaction.Sender.Id) {
-            if (transaction.Receiver.User.Id == logedUser.Id )
+        if (transaction.Receiver.User.Id != transaction.Sender.Id)
+        {
+            if (transaction.Receiver.User.Id == logedUser.Id)
             {
                 return TransactionType.Payment;
-            } else {
+            }
+            else
+            {
                 return TransactionType.Transference;
             }
 
         }
         return TransactionType.Transference;
     }
-    protected override void OnInitialized() {
+    protected override void OnInitialized()
+    {
         CurrentType = findType();
     }
-    
-    public TransactionType CurrentType { get; set; } = TransactionType.Deposit;
 
-    public string FormatDate(DateTime date) {
-        if (date.ToLocalTime().Day == DateTime.Now.Day) {
+    public TransactionType CurrentType { get; set; }
+
+    public string FormatDate(DateTime date)
+    {
+        if (date.ToLocalTime().Day == DateTime.Now.Day)
+        {
             return date.ToLocalTime().ToString("T");
         }
-        if (date.ToLocalTime().Year > DateTime.Now.Year) {
+        if (date.ToLocalTime().Year > DateTime.Now.Year)
+        {
             return date.ToLocalTime().ToString("dd/MM/yyyy");
-        } else {
+        }
+        else
+        {
             return date.ToLocalTime().ToString("dd / MMM").ToUpper();
         }
 
     }
-    public async Task CancelTransaction() {
-        if (logedUser == null || transaction == null)  {
+    public async Task CancelTransaction()
+    {
+        if (logedUser == null || transaction == null)
+        {
             return;
         }
         var cancelAlert = await UserService.CancelTransaction(logedUser, transaction);
-        
-        if (cancelAlert.Type == Models.AlertType.Success) {
+
+        if (cancelAlert.Type == Models.AlertType.Success)
+        {
             transaction.Status = TransactionStatus.Cancelled;
         }
     }
@@ -65,7 +80,9 @@
 
 <AuthorizeView>
     <Authorized>
-        <section class="card shadow-lg @(transaction.Status == TransactionStatus.Valid ? "" : "bg-secondary text-white")" style="max-width: 560px;">
+        <section
+            class="card shadow-lg @(transaction.Status == TransactionStatus.Valid ? "" : "bg-secondary text-white")"
+            style="max-width: 560px;">
             <main class="card-body  px-0 py-2 d-flex flex-wrap">
                 <div class="p-1">
                     <div class="rounded-circle bg-success"
@@ -81,40 +98,47 @@
                         {
                             <div class="rounded-circle bg-success"
                                 style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
-                                <img src="./assets/icons/Received.svg" width="70%" height="70%" />
+                                <img src="./assets/icons/Transfered.svg" width="70%" height="70%" />
                             </div>
                         }
                         @if (CurrentType == TransactionType.Payment)
                         {
                             <div class="rounded-circle bg-secondary"
                                 style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
-                                <img src="./assets/icons/Transfered.svg" width="70%" height="70%" />
+                                <img src="./assets/icons/Received.svg" width="70%" height="70%" />
                             </div>
                         }
                     </div>
                 </div>
                 <div class="text-start d-flex flex-grow-1 flex-column px-1">
                     <header class="w-100 pt-2 d-flex justify-content-between fw-bold">
-                        
+
                         <div>
-                            @(transaction.Receiver.User.Email == logedUser.Email ? "Received." : "Sent.") | <span class="text-success fw-bold"> @(transaction.TransferAmmount) R$ </span>
+                            @(transaction.Receiver.User.Email == logedUser.Email ? "Received." : "Sent.") | <span
+                                class="text-success fw-bold"> @(transaction.TransferAmmount) R$ </span>
                         </div>
                         <div class="fst-italic text-secondary">
                             @(FormatDate(transaction.Timestamp))
                         </div>
-                        
+
                     </header>
                     <section class="d-flex justify-content-between">
                         <div>
                             @(transaction.Sender)
                         </div>
                         <div>
-                            @if (transaction.Status != TransactionStatus.Cancelled) {
-                                <button @onclick="CancelTransaction" class="btn btn-danger btn-sm">Cancel transation</button>
-                            } else {
-                                <button disabled class="btn btn-danger btn-sm">Transaction Cancelled.</button>
+                            @if (CurrentType != TransactionType.Payment)
+                            {
+                                @if (transaction.Status != TransactionStatus.Cancelled)
+                                {
+                                    <button @onclick="CancelTransaction" class="btn btn-danger btn-sm">Cancel
+                                        transation</button>
+                                }
+                                else
+                                {
+                                    <button disabled class="btn btn-danger btn-sm">Transaction Cancelled.</button>
+                                }
                             }
-                            
                         </div>
                     </section>
                 </div>
