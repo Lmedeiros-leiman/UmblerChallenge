@@ -13,17 +13,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UmbraChallenge.Data.Models
 {
-    public enum PossibleTransferKeys
-        {
-            Email,
-            Phone,
-            Name,
-            Card,
-            CPF,
-            CNPJ,
-            Deposit,
+    public enum PossibleTransferKeys {
+        Email,
+        Phone,
+        Name,
+        Card,
+        CPF,
+        CNPJ,
+        Deposit,
 
-        };
+    };
     
     [Table("UserTransferKeys")]
     public class UserTransferKey
@@ -33,7 +32,8 @@ namespace UmbraChallenge.Data.Models
         public string KeyId {get; set;} = Guid.NewGuid().ToString();
         public required string UserId {get; set;}
         
-        public DateTime CreationTimeStamp = DateTime.UtcNow;
+        [DataType(DataType.DateTime)]
+        public DateTime CreationTimeStamp {get; set;} = DateTime.UtcNow;
         public  ApplicationUser? User {get; set;}
         public required PossibleTransferKeys KeyType {get;set;}
         public bool IsActive {get;set;} = true;

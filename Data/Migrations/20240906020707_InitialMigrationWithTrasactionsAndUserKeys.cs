@@ -164,6 +164,7 @@ namespace UmbraChallenge.Migrations
                 {
                     KeyId = table.Column<string>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
+                    CreationTimeStamp = table.Column<DateTime>(type: "TEXT", nullable: false),
                     KeyType = table.Column<int>(type: "INTEGER", nullable: false),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     KeyValue = table.Column<string>(type: "TEXT", nullable: false)
@@ -187,6 +188,7 @@ namespace UmbraChallenge.Migrations
                     SenderId = table.Column<string>(type: "TEXT", nullable: false),
                     ReceiverKeyId = table.Column<string>(type: "TEXT", nullable: false),
                     TransferAmmount = table.Column<double>(type: "REAL", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Status = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -211,19 +213,19 @@ namespace UmbraChallenge.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "0d538767-8b8b-4240-abca-34d952da411e", 0, "17ad5c99-c7c8-457c-9748-eb55e796a7e0", "john@localhost", true, false, null, "JOHN@LOCALHOST", null, null, null, false, "2d00218d-797b-478d-a7ec-a3f5ec3ff84f", false, "john@localhost" },
-                    { "78465ef5-22df-4d9f-b994-6b266ef92b69", 0, "23adb6cb-6606-4bc7-b54b-6bcc91dc3393", "maria@localhost", true, false, null, "MARIA@LOCALHOST", null, null, null, false, "1eab1396-142e-4803-b14d-913a97cb019d", false, "maria@localhost" },
-                    { "cfd7b860-eb4b-4e1b-8793-5a8186ca19e6", 0, "4a492724-72c8-401f-ae21-0868d15190d5", "admin@localhost", true, false, null, "ADMIN@LOCALHOST", null, null, null, false, "61d4ec1e-6b57-46d7-b6c3-03da6cf28947", false, "admin@localhost" }
+                    { "29bdfa41-6d45-439e-8fb8-9433040904ac", 0, "e29fbe5f-537b-44b1-ab76-96d69bf9c8f3", "john@localhost", true, false, null, "JOHN@LOCALHOST", null, null, null, false, "ae9d4ef9-90f8-4b4c-8120-6ceabfcc9b19", false, "john@localhost" },
+                    { "355d5da3-9d59-411e-bc32-b57f894015af", 0, "b927e4c4-41fd-4c0c-9269-e3faea6270a9", "admin@localhost", true, false, null, "ADMIN@LOCALHOST", null, null, null, false, "7b9fe936-2ea2-479d-97c5-335d7d973723", false, "admin@localhost" },
+                    { "c1efc369-31cb-4ec6-b7c5-3910f3da7c0f", 0, "71db8d20-9967-418d-b7a1-b376f1668994", "maria@localhost", true, false, null, "MARIA@LOCALHOST", null, null, null, false, "7e88cd5d-d3f1-4c16-80e7-c1c450fa3f09", false, "maria@localhost" }
                 });
 
             migrationBuilder.InsertData(
                 table: "UserTransferKeys",
-                columns: new[] { "KeyId", "IsActive", "KeyType", "KeyValue", "UserId" },
+                columns: new[] { "KeyId", "CreationTimeStamp", "IsActive", "KeyType", "KeyValue", "UserId" },
                 values: new object[,]
                 {
-                    { "1026e375-9fdc-4766-820a-c34283706f98", true, 0, "admin@localhost", "cfd7b860-eb4b-4e1b-8793-5a8186ca19e6" },
-                    { "2e5734b4-895f-4fad-9ce0-7c0d18254082", true, 0, "maria@localhost", "78465ef5-22df-4d9f-b994-6b266ef92b69" },
-                    { "d9d61c92-c25f-4d9e-8c24-a41b65983ebb", true, 0, "john@localhost", "0d538767-8b8b-4240-abca-34d952da411e" }
+                    { "656087dd-8f77-4a4a-a51b-0f2d8caa079f", new DateTime(2024, 9, 6, 2, 7, 7, 205, DateTimeKind.Utc).AddTicks(2354), true, 0, "john@localhost", "29bdfa41-6d45-439e-8fb8-9433040904ac" },
+                    { "8b745ada-e7dd-49f1-b639-f7a60d9295d8", new DateTime(2024, 9, 6, 2, 7, 7, 205, DateTimeKind.Utc).AddTicks(2360), true, 0, "maria@localhost", "c1efc369-31cb-4ec6-b7c5-3910f3da7c0f" },
+                    { "95ff690d-dd95-4534-a9eb-2d0a04c63d2b", new DateTime(2024, 9, 6, 2, 7, 7, 205, DateTimeKind.Utc).AddTicks(2341), true, 0, "admin@localhost", "355d5da3-9d59-411e-bc32-b57f894015af" }
                 });
 
             migrationBuilder.CreateIndex(

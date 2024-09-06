@@ -25,8 +25,8 @@ namespace UmbraChallenge.Data.Models
         public required UserTransferKey Receiver {get; set;}
         public required double TransferAmmount {get; set;}
         
-        
-        public readonly DateTime Timestamp = DateTime.UtcNow;
+        [DataType(DataType.DateTime)]
+        public  DateTime Timestamp {get; set;} = DateTime.UtcNow;
         
         public TransactionStatus Status {get; set;} = TransactionStatus.Valid;
 

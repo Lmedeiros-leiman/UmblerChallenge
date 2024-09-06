@@ -11,7 +11,7 @@ using UmbraChallenge.Data;
 namespace UmbraChallenge.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240905215842_InitialMigrationWithTrasactionsAndUserKeys")]
+    [Migration("20240906020707_InitialMigrationWithTrasactionsAndUserKeys")]
     partial class InitialMigrationWithTrasactionsAndUserKeys
     {
         /// <inheritdoc />
@@ -214,43 +214,43 @@ namespace UmbraChallenge.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "cfd7b860-eb4b-4e1b-8793-5a8186ca19e6",
+                            Id = "355d5da3-9d59-411e-bc32-b57f894015af",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4a492724-72c8-401f-ae21-0868d15190d5",
+                            ConcurrencyStamp = "b927e4c4-41fd-4c0c-9269-e3faea6270a9",
                             Email = "admin@localhost",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "61d4ec1e-6b57-46d7-b6c3-03da6cf28947",
+                            SecurityStamp = "7b9fe936-2ea2-479d-97c5-335d7d973723",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost"
                         },
                         new
                         {
-                            Id = "0d538767-8b8b-4240-abca-34d952da411e",
+                            Id = "29bdfa41-6d45-439e-8fb8-9433040904ac",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "17ad5c99-c7c8-457c-9748-eb55e796a7e0",
+                            ConcurrencyStamp = "e29fbe5f-537b-44b1-ab76-96d69bf9c8f3",
                             Email = "john@localhost",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "JOHN@LOCALHOST",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2d00218d-797b-478d-a7ec-a3f5ec3ff84f",
+                            SecurityStamp = "ae9d4ef9-90f8-4b4c-8120-6ceabfcc9b19",
                             TwoFactorEnabled = false,
                             UserName = "john@localhost"
                         },
                         new
                         {
-                            Id = "78465ef5-22df-4d9f-b994-6b266ef92b69",
+                            Id = "c1efc369-31cb-4ec6-b7c5-3910f3da7c0f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "23adb6cb-6606-4bc7-b54b-6bcc91dc3393",
+                            ConcurrencyStamp = "71db8d20-9967-418d-b7a1-b376f1668994",
                             Email = "maria@localhost",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "MARIA@LOCALHOST",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1eab1396-142e-4803-b14d-913a97cb019d",
+                            SecurityStamp = "7e88cd5d-d3f1-4c16-80e7-c1c450fa3f09",
                             TwoFactorEnabled = false,
                             UserName = "maria@localhost"
                         });
@@ -272,6 +272,9 @@ namespace UmbraChallenge.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("TransferAmmount")
                         .HasColumnType("REAL");
 
@@ -287,6 +290,9 @@ namespace UmbraChallenge.Migrations
             modelBuilder.Entity("UmbraChallenge.Data.Models.UserTransferKey", b =>
                 {
                     b.Property<string>("KeyId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreationTimeStamp")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsActive")
@@ -312,27 +318,30 @@ namespace UmbraChallenge.Migrations
                     b.HasData(
                         new
                         {
-                            KeyId = "1026e375-9fdc-4766-820a-c34283706f98",
+                            KeyId = "95ff690d-dd95-4534-a9eb-2d0a04c63d2b",
+                            CreationTimeStamp = new DateTime(2024, 9, 6, 2, 7, 7, 205, DateTimeKind.Utc).AddTicks(2341),
                             IsActive = true,
                             KeyType = 0,
                             KeyValue = "admin@localhost",
-                            UserId = "cfd7b860-eb4b-4e1b-8793-5a8186ca19e6"
+                            UserId = "355d5da3-9d59-411e-bc32-b57f894015af"
                         },
                         new
                         {
-                            KeyId = "d9d61c92-c25f-4d9e-8c24-a41b65983ebb",
+                            KeyId = "656087dd-8f77-4a4a-a51b-0f2d8caa079f",
+                            CreationTimeStamp = new DateTime(2024, 9, 6, 2, 7, 7, 205, DateTimeKind.Utc).AddTicks(2354),
                             IsActive = true,
                             KeyType = 0,
                             KeyValue = "john@localhost",
-                            UserId = "0d538767-8b8b-4240-abca-34d952da411e"
+                            UserId = "29bdfa41-6d45-439e-8fb8-9433040904ac"
                         },
                         new
                         {
-                            KeyId = "2e5734b4-895f-4fad-9ce0-7c0d18254082",
+                            KeyId = "8b745ada-e7dd-49f1-b639-f7a60d9295d8",
+                            CreationTimeStamp = new DateTime(2024, 9, 6, 2, 7, 7, 205, DateTimeKind.Utc).AddTicks(2360),
                             IsActive = true,
                             KeyType = 0,
                             KeyValue = "maria@localhost",
-                            UserId = "78465ef5-22df-4d9f-b994-6b266ef92b69"
+                            UserId = "c1efc369-31cb-4ec6-b7c5-3910f3da7c0f"
                         });
                 });
 
